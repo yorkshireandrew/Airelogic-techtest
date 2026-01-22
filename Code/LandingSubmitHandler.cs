@@ -26,7 +26,7 @@ namespace HealthTest
             if (!landing.NhsIsValidFormat(landing.nhs))
             {
                 LogInvalidNhsFormat(landing);
-                return Results.BadRequest("Invalid NHS number format. It should be a 10-digit number.");
+                return Answer("Invalid NHS number format. It should be a 10-digit number.");
             }
 
             if (_logPersonallyIdentifiableData)
@@ -39,7 +39,7 @@ namespace HealthTest
 
             if (patient == null)
             {
-                return Results.NotFound();
+                return Answer("Your details could not be found");
             }
 
             return Results.Ok(patient);
@@ -68,5 +68,13 @@ namespace HealthTest
                 year = form["dob_year"].ToString()
             };
         }
+
+        protected Microsoft.AspNetCore.Http.IResult Answer(string message)
+        {
+            var encodedMessage = Uri.EscapeDataString(message);
+            return Results.Redirect($"/Answer?message={encodedMessage}");
+        }
+
+
     }
 }

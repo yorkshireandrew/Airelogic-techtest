@@ -61,5 +61,16 @@ app.MapPost("/landing-submit", async (LandingSubmitHandler handler, HttpContext 
 	return await handler.Handle(ctx);
 });
 
-app.Logger.LogInformation("Starting Kestrel on {Url}", url);
+// Serve the response GET page with `message` query parameter
+app.MapGet("/Answer", async (HttpContext ctx) =>
+{
+	var message = ctx.Request.Query["message"].ToString() ?? string.Empty;
+	var file = Path.Combine(builder.Environment.ContentRootPath, "Templates", "Answer.html");
+	var html = await System.IO.File.ReadAllTextAsync(file);
+	html = html.Replace("{{message}}", System.Net.WebUtility.HtmlEncode(message)); // Insert message
+	ctx.Response.ContentType = "text/html";
+	await ctx.Response.WriteAsync(html);
+});
+
+app.Logger.LogInformation("Listening on {Url}", url);
 app.Run();
