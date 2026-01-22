@@ -1,4 +1,4 @@
-namespace HelloKestrel
+namespace HealthTest
 {
     public class AppSettings
   {
