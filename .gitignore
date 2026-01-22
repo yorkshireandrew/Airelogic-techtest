@@ -1,0 +1,42 @@
+# Ignore build outputs
+bin/
+obj/
+out/
+
+# Visual Studio / Visual Studio Code / Rider
+.vs/
+.vscode/
+.idea/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Test results
+TestResults/
+
+# ASP.NET
+wwwroot/node_modules/
+
+# Rider, ReSharper, dotCover
+*.DotSettings.user
+_ReSharper*/
+*.dotCover
+
+# IIS Express
+applicationhost.config
+
+# Misc
+*.log
+*.cache
+*.db
+*.sqlite
