@@ -47,8 +47,10 @@ if (!app.Environment.IsDevelopment())
 app.MapGet("/", async (HttpContext ctx) =>
 {
 	var file = Path.Combine(builder.Environment.ContentRootPath, "Templates", "Landing.html");
+	var html = await System.IO.File.ReadAllTextAsync(file);
+	html = html.Replace("{{expectedNhsLength}}", System.Net.WebUtility.HtmlEncode(appSettings.ExpectedNhsLength.ToString())); // Insert expected NHS length
 	ctx.Response.ContentType = "text/html";
-	await ctx.Response.SendFileAsync(file);
+	await ctx.Response.WriteAsync(html);
 });
 
 // Delegate POST to handler from DI

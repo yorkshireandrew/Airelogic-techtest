@@ -10,7 +10,7 @@
     <form id="health-form" method="post" action="/landing-submit">
         <div>
             <label for="nhs">NHS Number</label><br>
-            <input id="nhs" name="nhs" type="text" pattern="[0-9]{10}" inputmode="numeric" maxlength="10" required placeholder="1234567890" title="Enter a 10-digit NHS number" />
+            <input id="nhs" name="nhs" type="text" pattern="[0-9]{{{expectedNhsLength}}}" inputmode="numeric" maxlength="10" required placeholder="1234567890" title="Enter a 10-digit NHS number" />
         </div>
 
         <div>

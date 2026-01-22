@@ -11,12 +11,14 @@ namespace HealthTest
         private readonly IApiClient _apiClient;
         private readonly bool _logPersonallyIdentifiableData;
         private readonly string _patientNotFoundMessage;
+        private readonly int _expectedNhsLength = 10;
         public LandingSubmitHandler(IApiClient apiClient, ILogger<LandingSubmitHandler>? logger = null, AppSettings? config = null)
         {
             _apiClient = apiClient;
             _logger = logger;
             _logPersonallyIdentifiableData = config?.LogPersonallyIdentifiableData ?? false;
             _patientNotFoundMessage = config?.PatientNotFoundMessage ?? "Your details could not be found";
+            _expectedNhsLength = config?.ExpectedNhsLength ?? 10;
         }
 
         public async Task<IResult> Handle(HttpContext ctx)
@@ -25,10 +27,10 @@ namespace HealthTest
             
             var landing = CreateLandingFormModelFromForm(form);
 
-            if (!landing.NhsIsValidFormat(landing.nhs))
+            if (!landing.NhsIsValidFormat(landing.nhs, _expectedNhsLength))
             {
                 LogInvalidNhsFormat(landing);
-                return Answer("Invalid NHS number format. It should be a 10-digit number.");
+                return Answer("Invalid NHS number format. It is expected to be {_expectedNhsLength}-digit number.");
             }
 
             if (_logPersonallyIdentifiableData)
@@ -48,7 +50,7 @@ namespace HealthTest
                 {
                     return Answer(_patientNotFoundMessage);
                 }
-                
+
                 _logger?.LogError($"API server error: {ex.Message}");
                 return Answer("An error occurred while processing your request. Please try again later.");
             }
