@@ -56,6 +56,27 @@ namespace HealthTest.Test
             Assert.Contains(logger.Entries, e => e.Level == LogLevel.Warning && e.Message == "Invalid NHS number format received.");
         }
 
+        [Fact]
+        public async Task Handle_PatientNotFound_ReturnsRedirectWithEncodedMessage()
+        {
+            var dict = new Dictionary<string, StringValues>
+            {
+                {"nhs", "1234567890"},
+                {"surname", "Smith"},
+                {"dob_day", "01"},
+                {"dob_month", "02"},
+                {"dob_year", "1990"}
+            };
+
+            var ctx = CreateContextWithForm(dict);
+            var handler = new LandingSubmitHandler(new StubApiClient());
+
+            var result = await handler.Handle(ctx);
+
+            var redirect = Assert.IsType<Microsoft.AspNetCore.Http.Results.RedirectResult>(result);
+            Assert.Equal("/Answer?message=Your%20details%20could%20not%20be%20found", redirect.Location);
+        }
+
                 
 
         private DefaultHttpContext CreateContextWithForm(Dictionary<string, StringValues> values)

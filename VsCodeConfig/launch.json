@@ -16,5 +16,21 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     }
+    ,
+    {
+      "name": "Run Unit Tests",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "test",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "program": "${workspaceFolder}/Code/bin/Debug/net8.0/HealthTest.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
   ]
 }

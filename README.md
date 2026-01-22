@@ -10,6 +10,8 @@
 ```powershell
 dotnet test Test/HealthTest.Test/HealthTest.Test.csproj
 ```
+or in VS Code 
+Run Task: Terminal → Run Task → test
 
 ```powershell
 dotnet run
