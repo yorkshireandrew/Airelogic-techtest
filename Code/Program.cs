@@ -1,18 +1,14 @@
 using HealthTest;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-using System.Security.Cryptography.X509Certificates;
+//using System.IO;
+//using Microsoft.AspNetCore.Http;
+//using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Prefer a physical appsettings.json in the output folder, then fall back to the embedded JSON
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
-
-// Bind configuration into the AppSettings POCO
 var appSettings = new AppSettings();
 builder.Configuration.Bind(appSettings);
-
-// Register AppSettings for DI
 builder.Services.AddSingleton(appSettings);
 
 // Register ApiClient and its interface with an HttpClient

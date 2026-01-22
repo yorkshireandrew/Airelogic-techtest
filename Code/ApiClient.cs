@@ -9,17 +9,24 @@ namespace HealthTest
     {
         private readonly HttpClient _httpClient;
         private readonly string _endpoint;
+        private readonly string _apiSecret;
 
         public ApiClient(HttpClient httpClient, AppSettings? config = null)
         {
             _httpClient = httpClient;
             _endpoint = config?.ApiEndpoint?.TrimEnd('/') ?? string.Empty;
+            _apiSecret = config?.ApiSecret ?? string.Empty;
         }
 
         public async Task<PatientModel?> GetPatientFromNhsNumberAsync(string lookupValue)
         {
             string requestUri = string.IsNullOrEmpty(_endpoint) ? lookupValue : $"{_endpoint}/{lookupValue}";
-            using var resp = await _httpClient.GetAsync(requestUri).ConfigureAwait(false);
+            using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            if (!string.IsNullOrEmpty(_apiSecret))
+            {
+                req.Headers.Add("Ocp-Apim-Subscription-Key", _apiSecret);
+            }
+            using var resp = await _httpClient.SendAsync(req).ConfigureAwait(false);
 
             if (resp.StatusCode == HttpStatusCode.NotFound)
             {

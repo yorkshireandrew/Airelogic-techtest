@@ -37,14 +37,21 @@ namespace HealthTest
             }
 
             // Call the API client with the provided NHS number
-            var patient = await _apiClient.GetPatientFromNhsNumberAsync(landing.nhs.Trim()).ConfigureAwait(false);
-
-            if (patient == null)
-            {
-                return Answer(_patientNotFoundMessage);
+            try{
+                var patient = await _apiClient.GetPatientFromNhsNumberAsync(landing.nhs).ConfigureAwait(false);
+                if (patient == null)  return Answer(_patientNotFoundMessage);
+                return Results.Ok(patient);
             }
-
-            return Results.Ok(patient);
+            catch(ApiServerException ex)
+            {
+                if(ex.Message.ToString().Contains("invalid nhs number", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return Answer(_patientNotFoundMessage);
+                }
+                
+                _logger?.LogError($"API server error: {ex.Message}");
+                return Answer("An error occurred while processing your request. Please try again later.");
+            }
         }
 
         protected virtual void LogInvalidNhsFormat(LandingFormModel landing)
