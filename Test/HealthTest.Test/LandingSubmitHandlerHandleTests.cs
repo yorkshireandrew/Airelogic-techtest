@@ -28,11 +28,11 @@ namespace HealthTest.Test
             var ctx = CreateContextWithForm(dict);
             var logger = new TestLogger();
             var config = new AppSettings { LogPersonallyIdentifiableData = true };
-            var handler = new LandingSubmitHandler(new StubApiClient(), logger, config);
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), logger, config);
 
             await handler.Handle(ctx);
 
-            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Warning && e.Message.Contains("bad"));
+            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Warning && e.Message.Contains("bad")); // Logged NHS number
         }
 
         [Fact]
@@ -49,12 +49,12 @@ namespace HealthTest.Test
 
             var ctx = CreateContextWithForm(dict);
             var logger = new TestLogger();
-            var config = new AppSettings { LogPersonallyIdentifiableData = false };
-            var handler = new LandingSubmitHandler(new StubApiClient(), logger, config);
+            var config = new AppSettings { LogPersonallyIdentifiableData = false }; // PID logging disabled
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), logger, config);
 
             await handler.Handle(ctx);
 
-            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Warning && e.Message == "Invalid NHS number format received.");
+            Assert.Contains(logger.Entries, e => e.Level == LogLevel.Warning && e.Message == "Invalid NHS number format received."); // Logged generic message
         }
 
         [Fact]
@@ -62,20 +62,64 @@ namespace HealthTest.Test
         {
             var dict = new Dictionary<string, StringValues>
             {
-                {"nhs", "1234567890"},
+                {"nhs", "1112223339"}, // Valid format
                 {"surname", "Smith"},
                 {"dob_day", "01"},
                 {"dob_month", "02"},
                 {"dob_year", "1990"}
             };
 
-            var ctx = CreateContextWithForm(dict);
-            var handler = new LandingSubmitHandler(new StubApiClient());
+            var ctx = CreateContextWithForm(dict); 
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub()); // Always returns null patient
 
             var result = await handler.Handle(ctx);
 
             var redirect = Assert.IsType<RedirectHttpResult>(result);
             Assert.Equal("/Answer?message=Your%20details%20could%20not%20be%20found", redirect.Url);
+        }
+
+        [Fact]
+        public async Task Handle_InvalidNhsNumber_ReturnsRedirect()
+        {
+            var dict = new Dictionary<string, StringValues>
+            {
+                {"nhs", "bad"},
+                {"surname", "Smith"},
+                {"dob_day", "01"},
+                {"dob_month", "02"},
+                {"dob_year", "1990"}
+            };
+
+            var ctx = CreateContextWithForm(dict); 
+            var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false }; // Setting for generic message
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), null, config); // Always returns null patient
+
+            var result = await handler.Handle(ctx);
+
+            var redirect = Assert.IsType<RedirectHttpResult>(result);
+            Assert.Equal("/Answer?message=Your%20details%20could%20not%20be%20found", redirect.Url);
+        }
+
+        [Fact]
+        public async Task Handle_InvalidNhsNumber_And_InformUserWhenNhsNumberFormatIncorrectTrue_ReturnsRedirect()
+        {
+            var dict = new Dictionary<string, StringValues>
+            {
+                {"nhs", "bad"},
+                {"surname", "Smith"},
+                {"dob_day", "01"},
+                {"dob_month", "02"},
+                {"dob_year", "1990"}
+            };
+
+            var ctx = CreateContextWithForm(dict); 
+            var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = true }; // Setting for helpful message
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), null, config); // Always returns null patient
+
+            var result = await handler.Handle(ctx);
+
+            var redirect = Assert.IsType<RedirectHttpResult>(result);
+            Assert.Equal("/Answer?message=NHS%20number%20format%20is%20incorrect", redirect.Url);
         }
 
                 

@@ -8,12 +8,16 @@ namespace HealthTest
         public string month { get; set; } = string.Empty;
         public string year { get; set; } = string.Empty;
 
-        public bool NhsIsValidFormat(string nhs, int expectedLength = 10)
+        public bool NhsIsValid(string nhs)
         {
-            if (nhs.Length != expectedLength) return false;
+            if (nhs.Length != 9 && nhs.Length != 10) return false;
             foreach (char c in nhs)
             {
                 if (!char.IsDigit(c)) return false;
+            }
+            if (nhs.Length == 10)
+            {
+                return NhsNumberValidator.IsValid(nhs);
             }
             return true;
         }

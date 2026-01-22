@@ -10,15 +10,15 @@ namespace HealthTest
         private readonly ILogger<LandingSubmitHandler>? _logger;
         private readonly IApiClient _apiClient;
         private readonly bool _logPersonallyIdentifiableData;
+        private readonly bool _informUserWhenNhsNumberFormatIncorrect;
         private readonly string _patientNotFoundMessage;
-        private readonly int _expectedNhsLength = 10;
         public LandingSubmitHandler(IApiClient apiClient, ILogger<LandingSubmitHandler>? logger = null, AppSettings? config = null)
         {
             _apiClient = apiClient;
             _logger = logger;
             _logPersonallyIdentifiableData = config?.LogPersonallyIdentifiableData ?? false;
             _patientNotFoundMessage = config?.PatientNotFoundMessage ?? "Your details could not be found";
-            _expectedNhsLength = config?.ExpectedNhsLength ?? 10;
+            _informUserWhenNhsNumberFormatIncorrect = config?.InformUserWhenNhsNumberFormatIncorrect ?? false;
         }
 
         public async Task<IResult> Handle(HttpContext ctx)
@@ -27,10 +27,11 @@ namespace HealthTest
             
             var landing = CreateLandingFormModelFromForm(form);
 
-            if (!landing.NhsIsValidFormat(landing.nhs, _expectedNhsLength))
+            if (!landing.NhsIsValid(landing.nhs))
             {
                 LogInvalidNhsFormat(landing);
-                return Answer("Invalid NHS number format. It is expected to be {_expectedNhsLength}-digit number.");
+                if (_informUserWhenNhsNumberFormatIncorrect == true) return Answer("NHS number format is incorrect");
+                return Answer(_patientNotFoundMessage);
             }
 
             if (_logPersonallyIdentifiableData)
@@ -40,7 +41,8 @@ namespace HealthTest
 
             // Call the API client with the provided NHS number
             try{
-                var patient = await _apiClient.GetPatientFromNhsNumberAsync(landing.nhs).ConfigureAwait(false);
+                var nineDigitNhs = landing.nhs.Length == 10 ? landing.nhs.Substring(0, 9) : landing.nhs;
+                var patient = await _apiClient.GetPatientFromNhsNumberAsync(nineDigitNhs).ConfigureAwait(false);
                 if (patient == null)  return Answer(_patientNotFoundMessage);
                 return Results.Ok(patient);
             }

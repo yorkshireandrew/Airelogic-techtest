@@ -3,7 +3,7 @@ using HealthTest;
 
 namespace HealthTest.Test
 {
-    public class StubApiClient : IApiClient
+    public class AlwaysReturnsNullApiClientStub : IApiClient
     {
         public Task<PatientModel?> GetPatientFromNhsNumberAsync(string lookupValue)
         {

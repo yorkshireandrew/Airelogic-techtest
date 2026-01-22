@@ -11,7 +11,7 @@ namespace HealthTest.Test
         // Wrapper to expose protected method for testing
         private class TestLandingSubmitHandler : LandingSubmitHandler
         {
-            public TestLandingSubmitHandler() : base(new StubApiClient()) { }
+            public TestLandingSubmitHandler() : base(new AlwaysReturnsNullApiClientStub()) { }
 
             public LandingFormModel CallCreate(IFormCollection form) => CreateLandingFormModelFromForm(form);
         }
