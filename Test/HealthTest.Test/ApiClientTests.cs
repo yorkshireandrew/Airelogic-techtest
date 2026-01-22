@@ -87,14 +87,14 @@ namespace HealthTest.Test
         {
             var json = "{ \"nhsNumber\": \"123\", \"name\": \"Alice\", \"born\": \"01-02-2020\" }";
             var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(json) };
-            var handler = new CaptureHandler(response);
+            CaptureHandler handler = new CaptureHandler(response);
             var client = new HttpClient(handler);
             var api = new ApiClient(client, new AppSettings { ApiEndpoint = "http://example", ApiSecret = "secret-value" });
 
             await api.GetPatientFromNhsNumberAsync("123");
 
             Assert.NotNull(handler.LastRequest);
-            Assert.Equal("http://example/123", handler.LastRequest.RequestUri.ToString()); // Verify URL construction
+            Assert.Equal("http://example/123", handler.LastRequest!.RequestUri!.ToString()); // Verify URL construction
             Assert.True(handler.LastRequest.Headers.Contains("Ocp-Apim-Subscription-Key"));
             var values = handler.LastRequest.Headers.GetValues("Ocp-Apim-Subscription-Key");
             Assert.Contains("secret-value", values);
