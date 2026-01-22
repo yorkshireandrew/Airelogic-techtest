@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Logging;
 using Xunit;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace HealthTest.Test
 {
@@ -73,8 +74,8 @@ namespace HealthTest.Test
 
             var result = await handler.Handle(ctx);
 
-            var redirect = Assert.IsType<Microsoft.AspNetCore.Http.Results.RedirectResult>(result);
-            Assert.Equal("/Answer?message=Your%20details%20could%20not%20be%20found", redirect.Location);
+            var redirect = Assert.IsType<RedirectHttpResult>(result);
+            Assert.Equal("/Answer?message=Your%20details%20could%20not%20be%20found", redirect.Url);
         }
 
                 

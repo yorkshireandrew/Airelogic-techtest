@@ -17,7 +17,7 @@
       "label": "test",
       "command": "dotnet",
       "type": "process",
-      "args": ["test", "${workspaceFolder}/Test/HealthTest.Test/HealthTest.Test.csproj", "--no-build"],
+      "args": ["test", "${workspaceFolder}/Test/HealthTest.Test/HealthTest.Test.csproj"],
       "problemMatcher": "$msCompile",
       "group": {
         "kind": "test",
