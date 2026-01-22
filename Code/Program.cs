@@ -1,4 +1,5 @@
 using HealthTest;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,12 @@ builder.WebHost.UseUrls(url);
 
 var app = builder.Build();
 
-app.MapGet("/", () => Results.Text("Hello, world!", "text/plain"));
+app.MapGet("/", async (HttpContext ctx) =>
+{
+	var file = Path.Combine(builder.Environment.ContentRootPath, "Templates", "Landing.html");
+	ctx.Response.ContentType = "text/html";
+	await ctx.Response.SendFileAsync(file);
+});
 
 app.Logger.LogInformation("Starting Kestrel on {Url}", url);
 app.Run();
