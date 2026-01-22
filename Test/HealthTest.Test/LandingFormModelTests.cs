@@ -3,7 +3,7 @@ using Xunit;
 
 namespace HealthTest.Test
 {
-    public class LandingFormRawTests
+    public class LandingFormModelTests
     {
         [Theory]
         [InlineData("1234567890", true)]
@@ -13,7 +13,7 @@ namespace HealthTest.Test
         [InlineData("123456789a", false)]
         public void NhsIsValidFormat_Works(string input, bool expected)
         {
-            var lf = new LandingFormRaw();
+            var lf = new LandingFormModel();
             var actual = lf.NhsIsValidFormat(input);
             Assert.Equal(expected, actual);
         }

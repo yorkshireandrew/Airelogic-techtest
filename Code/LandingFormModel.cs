@@ -1,6 +1,6 @@
 namespace HealthTest
 {
-    public class LandingFormRaw
+    public class LandingFormModel
     {
         public string nhs { get; set; } = string.Empty;
         public string surname { get; set; } = string.Empty;

@@ -12,6 +12,12 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnCh
 var appSettings = new AppSettings();
 builder.Configuration.Bind(appSettings);
 
+// Register AppSettings for DI
+builder.Services.AddSingleton(appSettings);
+
+// Register ApiClient and its interface with an HttpClient
+builder.Services.AddHttpClient<IApiClient, ApiClient>();
+
 var host = string.IsNullOrWhiteSpace(appSettings.Host) ? "localhost" : appSettings.Host;
 var port = appSettings.Port <= 0 ? 5000 : appSettings.Port;
 
