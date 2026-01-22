@@ -26,17 +26,12 @@ namespace HealthTest
             var form = await ctx.Request.ReadFormAsync();
             
             var landing = CreateLandingFormModelFromForm(form);
+             if (_logPersonallyIdentifiableData) _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; DOB={landing.day}-{landing.month}-{landing.year}");
 
             if (!landing.NhsIsValid(landing.nhs))
             {
                 LogInvalidNhsFormat(landing);
-                if (_informUserWhenNhsNumberFormatIncorrect == true) return Answer("NHS number format is incorrect");
-                return Answer(_patientNotFoundMessage);
-            }
-
-            if (_logPersonallyIdentifiableData)
-            {
-                _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; DOB={landing.day}-{landing.month}-{landing.year}");
+                return SendInvalidNhsNumberResponse();
             }
 
             // Call the API client with the provided NHS number
@@ -44,13 +39,20 @@ namespace HealthTest
                 var nineDigitNhs = landing.nhs.Length == 10 ? landing.nhs.Substring(0, 9) : landing.nhs;
                 var patient = await _apiClient.GetPatientFromNhsNumberAsync(nineDigitNhs).ConfigureAwait(false);
                 if (patient == null)  return Answer(_patientNotFoundMessage);
+
+                if(patient.SurnameMatches(landing.surname) == false || patient.NhsNumberMatches(nineDigitNhs) == false || patient.DateOfBirthMatches(landing.day, landing.month, landing.year) == false)
+                {
+                    return Answer(_patientNotFoundMessage);
+                }
+
+                
                 return Results.Ok(patient);
             }
             catch(ApiServerException ex)
             {
                 if(ex.Message.ToString().Contains("invalid nhs number", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    return Answer(_patientNotFoundMessage);
+                    return SendInvalidNhsNumberResponse();
                 }
 
                 _logger?.LogError($"API server error: {ex.Message}");
@@ -80,6 +82,11 @@ namespace HealthTest
                 month = form["dob_month"].ToString().Trim(),
                 year = form["dob_year"].ToString().Trim()
             };
+        }
+
+        private Microsoft.AspNetCore.Http.IResult SendInvalidNhsNumberResponse(){
+            if (_informUserWhenNhsNumberFormatIncorrect == true) return Answer("NHS number format is incorrect"); 
+            return Answer(_patientNotFoundMessage);
         }
 
         protected Microsoft.AspNetCore.Http.IResult Answer(string message)
