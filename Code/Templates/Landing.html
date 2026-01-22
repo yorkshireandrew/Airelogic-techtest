@@ -37,6 +37,7 @@
     <script>
         (function(){
             const nhs = document.getElementById('nhs');
+            const surname = document.getElementById('surname');
             const day = document.getElementById('dob-day');
             const month = document.getElementById('dob-month');
             const year = document.getElementById('dob-year');
@@ -49,10 +50,19 @@
             if (nhs) {
                 nhs.addEventListener('input', () => nhs.setCustomValidity(''));
                 nhs.addEventListener('invalid', () => {
-                    if (nhs.validity.valueMissing) {
+                    if (nhs.validity.valueMissing || nhs.value.trim() === '') {
                         nhs.setCustomValidity('Please enter your NHS number');
                     } else {
                         nhs.setCustomValidity('NHS number must be a 10-digit numeric value');
+                    }
+                });
+            }
+
+            if (surname) {
+                surname.addEventListener('input', () => surname.setCustomValidity(''));
+                surname.addEventListener('invalid', () => {
+                    if (surname.validity.valueMissing || surname.value.trim() === '') {
+                        surname.setCustomValidity('Please enter your surname');
                     }
                 });
             }
@@ -104,7 +114,20 @@
 
             if (form) {
                 form.addEventListener('submit', function(e) {
+                    // Trim NHS and surname values before validation
+                    if (nhs) nhs.value = nhs.value.trim();
+                    if (surname) surname.value = surname.value.trim();
+
                     clearDobValidity();
+
+                    // Ensure surname is not empty after trimming
+                    if (surname && surname.value === '') {
+                        surname.setCustomValidity('Please enter your surname');
+                        e.preventDefault();
+                        if (surname.reportValidity) surname.reportValidity();
+                        return;
+                    }
+
                     if (!validateDob()) {
                         e.preventDefault();
                         if (day && day.reportValidity) day.reportValidity();

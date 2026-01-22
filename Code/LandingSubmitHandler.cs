@@ -10,11 +10,13 @@ namespace HealthTest
         private readonly ILogger<LandingSubmitHandler>? _logger;
         private readonly IApiClient _apiClient;
         private readonly bool _logPersonallyIdentifiableData;
+        private readonly string _patientNotFoundMessage;
         public LandingSubmitHandler(IApiClient apiClient, ILogger<LandingSubmitHandler>? logger = null, AppSettings? config = null)
         {
             _apiClient = apiClient;
             _logger = logger;
             _logPersonallyIdentifiableData = config?.LogPersonallyIdentifiableData ?? false;
+            _patientNotFoundMessage = config?.PatientNotFoundMessage ?? "Your details could not be found";
         }
 
         public async Task<IResult> Handle(HttpContext ctx)
@@ -39,7 +41,7 @@ namespace HealthTest
 
             if (patient == null)
             {
-                return Answer("Your details could not be found");
+                return Answer(_patientNotFoundMessage);
             }
 
             return Results.Ok(patient);
@@ -61,11 +63,11 @@ namespace HealthTest
         {
             return new LandingFormModel
             {
-                nhs = form["nhs"].ToString(),
-                surname = form["surname"].ToString(),
-                day = form["dob_day"].ToString(),
-                month = form["dob_month"].ToString(),
-                year = form["dob_year"].ToString()
+                nhs = form["nhs"].ToString().Trim(),
+                surname = form["surname"].ToString().Trim(),
+                day = form["dob_day"].ToString().Trim(),
+                month = form["dob_month"].ToString().Trim(),
+                year = form["dob_year"].ToString().Trim()
             };
         }
 

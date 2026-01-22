@@ -19,13 +19,14 @@ namespace HealthTest.Test
         [Fact]
         public void CreateLandingFromForm_ParsesFormValues()
         {
+            // Values have trailing spaces to test trimming
             var dict = new Dictionary<string, StringValues>
             {
-                {"nhs", "1234567890"},
-                {"surname", "Smith"},
-                {"dob_day", "01"},
-                {"dob_month", "02"},
-                {"dob_year", "1990"}
+                {"nhs", "1234567890 "},
+                {"surname", "Smith "},
+                {"dob_day", "01 "},
+                {"dob_month", "02 "},
+                {"dob_year", "1990 "}
             };
 
             var form = new FormCollection(dict);

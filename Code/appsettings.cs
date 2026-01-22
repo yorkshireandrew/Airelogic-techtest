@@ -7,5 +7,6 @@ namespace HealthTest
 
      public bool LogPersonallyIdentifiableData {get; set;}= false;
      public string ApiEndpoint { get; set; } = string.Empty;
+     public string PatientNotFoundMessage { get; set; } = "Your details could not be found";
   }
 }
