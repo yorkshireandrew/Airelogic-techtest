@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Launch (HealthTest)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "program": "${workspaceFolder}/Code/bin/Debug/net8.0/HealthTest.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/Code",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

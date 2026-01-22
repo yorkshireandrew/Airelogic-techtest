@@ -15,13 +15,31 @@ builder.Configuration.Bind(appSettings);
 var host = string.IsNullOrWhiteSpace(appSettings.Host) ? "localhost" : appSettings.Host;
 var port = appSettings.Port <= 0 ? 5000 : appSettings.Port;
 
-var url = $"http://{host}:{port}";
-builder.WebHost.UseUrls(url);
+var scheme = builder.Environment.IsDevelopment() ? "http" : "https";
+var url = $"{scheme}://{host}:{port}";
+// Ensure debugger/dev runs use HTTP even if environment variables set HTTPS endpoints.
+if (builder.Environment.IsDevelopment())
+{
+	builder.WebHost.ConfigureKestrel(options =>
+	{
+		options.ListenAnyIP(port); // HTTP for local/dev
+	});
+}
+else
+{
+	builder.WebHost.UseUrls(url);
+}
 
 // Register handler with DI
 builder.Services.AddSingleton<LandingSubmitHandler>();
 
 var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+	app.UseHsts();
+  app.UseHttpsRedirection();
+}
 
 // Serve the static HTML landing page
 app.MapGet("/", async (HttpContext ctx) =>
