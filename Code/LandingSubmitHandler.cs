@@ -12,14 +12,8 @@ namespace HealthTest
         public async Task<IResult> Handle(HttpContext ctx)
         {
             var form = await ctx.Request.ReadFormAsync();
-            var landing = new LandingFormRaw
-            {
-                nhs = form["nhs"].ToString(),
-                surname = form["surname"].ToString(),
-                day = form["dob_day"].ToString(),
-                month = form["dob_month"].ToString(),
-                year = form["dob_year"].ToString()
-            };
+            
+            var landing = CreateLandingFromForm(form);
 
             if (!landing.NhsIsValidFormat(landing.nhs))
             {
@@ -28,6 +22,18 @@ namespace HealthTest
 
             var response = $"Received: NHS={landing.nhs}; Surname={landing.surname}; DOB={landing.day}-{landing.month}-{landing.year}";
             return Results.Text(response, "text/plain");
+        }
+
+        protected virtual LandingFormRaw CreateLandingFromForm(IFormCollection form)
+        {
+            return new LandingFormRaw
+            {
+                nhs = form["nhs"].ToString(),
+                surname = form["surname"].ToString(),
+                day = form["dob_day"].ToString(),
+                month = form["dob_month"].ToString(),
+                year = form["dob_year"].ToString()
+            };
         }
     }
 }

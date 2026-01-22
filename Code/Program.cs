@@ -17,7 +17,7 @@ var port = appSettings.Port <= 0 ? 5000 : appSettings.Port;
 
 var scheme = builder.Environment.IsDevelopment() ? "http" : "https";
 var url = $"{scheme}://{host}:{port}";
-// Ensure debugger/dev runs use HTTP even if environment variables set HTTPS endpoints.
+
 if (builder.Environment.IsDevelopment())
 {
 	builder.WebHost.ConfigureKestrel(options =>

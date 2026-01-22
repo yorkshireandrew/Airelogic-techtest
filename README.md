@@ -8,6 +8,10 @@
 - To debug using HTTP ensure the environment variable "ASPNETCORE_ENVIRONMENT": "Development"
 
 ```powershell
+dotnet test Test/HealthTest.Test/HealthTest.Test.csproj
+```
+
+```powershell
 dotnet run
 ```
 
