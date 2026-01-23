@@ -36,7 +36,7 @@ namespace HealthTest
             return birthDay == inputDay && birthMonth == inputMonth && birthYear == inputYear;
         }
 
-        public int GetAge(DateTime now)
+        public int GetAge(DateTime today)
         {
             var dobParts = born.Split('-');
             if (dobParts.Length != 3)
@@ -47,9 +47,32 @@ namespace HealthTest
             int year = int.Parse(dobParts[2]);
 
             var birthDate = new System.DateTime(year, month, day);
-            int age = now.Year - birthDate.Year;
-            if (now.Month < birthDate.Month || (now.Month == birthDate.Month && now.Day < birthDate.Day))
+            int age = today.Year - birthDate.Year;
+            if (today.Month < birthDate.Month || (today.Month == birthDate.Month && today.Day < birthDate.Day))
                 age--;
+            return age;
+        }
+
+        public int CalculateAge(DateTime today)
+        {
+            var dobParts = born.Split('-');
+            if (dobParts.Length != 3)
+                throw new System.FormatException("API Date of birth is not in the expected format DD-MM-YYYY");
+
+            int day = int.Parse(dobParts[0]);
+            int month = int.Parse(dobParts[1]);
+            int year = int.Parse(dobParts[2]);
+            var dateOfBirth = new System.DateTime(year, month, day);
+
+            int age = today.Year - dateOfBirth.Year;
+
+            // If we step back the year difference and we're before the birth date, we need to subtract one
+            // In other words, if the birthday hasn't occurred yet this year
+            if (today.Date.AddYears(-age) < dateOfBirth.Date)
+            {
+                age--;
+            }
+
             return age;
         }
     }

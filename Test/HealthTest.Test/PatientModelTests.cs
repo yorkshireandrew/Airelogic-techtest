@@ -64,7 +64,6 @@ namespace HealthTest.Test
         }
         
         [Theory]
-        // Birthday has occurred this year
         [InlineData("01-01-2000", "2026-01-02", 26)]  // Birthday has occurred this year
         [InlineData("22-01-2000", "2026-01-22", 26)]  // Birthday is today
         [InlineData("23-01-2000", "2026-01-22", 25)]  // Birthday has not occurred yet this year
@@ -76,6 +75,20 @@ namespace HealthTest.Test
             var now = DateTime.Parse(nowString);
             var patient = new PatientModel { born = born };
             Assert.Equal(expectedAge, patient.GetAge(now));
+        }
+
+        [Theory]
+        [InlineData("01-01-2000", "2026-01-02", 26)]  // Birthday has occurred this year
+        [InlineData("22-01-2000", "2026-01-22", 26)]  // Birthday is today
+        [InlineData("23-01-2000", "2026-01-22", 25)]  // Birthday has not occurred yet this year
+        [InlineData("29-02-2000", "2025-02-28", 24)]  // Leap year birthday, not leap year now
+        [InlineData("29-02-2000", "2024-02-29", 24)]  // Leap year birthday, leap year now
+        [InlineData("15-06-2000", "2026-01-22", 25)]  // Birthday month not reached yet, but day is higher than birth day
+        public void CalculateAge_WorksAsExpected(string born, string nowString, int expectedAge)
+        {
+            var now = DateTime.Parse(nowString);
+            var patient = new PatientModel { born = born };
+            Assert.Equal(expectedAge, patient.CalculateAge(now));
         }
 
         [Theory]
