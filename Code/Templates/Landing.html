@@ -53,7 +53,7 @@
                     if (nhs.validity.valueMissing || nhs.value.trim() === '') {
                         nhs.setCustomValidity('Please enter your NHS number');
                     } else {
-                        nhs.setCustomValidity('NHS number must be a 10-digit numeric value');
+                        nhs.setCustomValidity('NHS number must be a 9 or 10-digit numeric value');
                     }
                 });
             }
@@ -134,6 +134,16 @@
                     }
                 });
             }
+            // Clear the form when the page loads to ensure new users cannot see stale values of a previous user
+            document.addEventListener('DOMContentLoaded', function () {
+                try {
+                    if (form) {
+                        form.reset();
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            });
         })();
     </script>
 </body>
