@@ -7,22 +7,8 @@ namespace HealthTest.Test
 {
     public class LandingSubmitHandlerTests
     {
-        // Wrapper to expose protected method for testing
-        private class TestLandingSubmitHandler : LandingSubmitHandler
-        {
-            private class DummyAgeBandCalculator : IAgeBandCalculator
-            {
-                public int CalculateAgeBand(int age) => 0;
-            }
-
-            public TestLandingSubmitHandler()
-                : base(new AlwaysReturnsNullApiClientStub(), new DummyAgeBandCalculator(), logger: null, config: null) { }
-
-            public LandingFormModel CallCreate(IFormCollection form) => CreateLandingFormModelFromForm(form);
-        }
-
         [Fact]
-        public void CreateLandingFromForm_ParsesFormValues()
+        public void LandingFormParser_Parse_ParsesFormValues()
         {
             // Values have trailing spaces to test trimming
             var dict = new Dictionary<string, StringValues>
@@ -35,8 +21,8 @@ namespace HealthTest.Test
             };
 
             var form = new FormCollection(dict);
-            var handler = new TestLandingSubmitHandler();
-            var landing = handler.CallCreate(form);
+            var parser = new LandingFormParser();
+            var landing = parser.Parse(form);
 
             Assert.Equal("1234567890", landing.nhs);
             Assert.Equal("Smith", landing.surname);

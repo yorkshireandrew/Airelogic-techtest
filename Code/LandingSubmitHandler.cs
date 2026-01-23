@@ -14,7 +14,9 @@ public class LandingSubmitHandler
     private readonly bool _informUserWhenNhsNumberFormatIncorrect;
     private readonly string _patientNotFoundMessage;
     private readonly string _notEligibleMessage;
-    public LandingSubmitHandler(IApiClient apiClient, IAgeBandCalculator ageBandCalculator, ILogger<LandingSubmitHandler>? logger = null, AppSettings? config = null)
+    private readonly LandingFormParser _landingFormParser;
+
+    public LandingSubmitHandler(IApiClient apiClient, IAgeBandCalculator ageBandCalculator, ILogger<LandingSubmitHandler>? logger = null, AppSettings? config = null, LandingFormParser? landingFormParser = null)
     {
         _apiClient = apiClient;
         _logger = logger;
@@ -23,13 +25,14 @@ public class LandingSubmitHandler
         _patientNotFoundMessage = config?.PatientNotFoundMessage ?? "Your details could not be found";
         _notEligibleMessage = config?.NotEligibleMessage ?? "You are not eligible for this service";
         _informUserWhenNhsNumberFormatIncorrect = config?.InformUserWhenNhsNumberFormatIncorrect ?? false;
+        _landingFormParser = landingFormParser ?? new LandingFormParser();
     }
 
     public async Task<IResult> Handle(HttpContext ctx)
     {
         var form = await ctx.Request.ReadFormAsync();
-        
-        var landing = CreateLandingFormModelFromForm(form);
+
+        var landing = _landingFormParser.Parse(form);
         if (_logPersonallyIdentifiableData) _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; DOB={landing.day}-{landing.month}-{landing.year}");
 
         if (!landing.NhsIsValid(landing.nhs))
