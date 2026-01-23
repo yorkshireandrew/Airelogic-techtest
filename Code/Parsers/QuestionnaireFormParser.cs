@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace HealthTest;

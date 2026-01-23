@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace HealthTest;
 
 public class QuestionnaireScorer

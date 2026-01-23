@@ -50,7 +50,7 @@ else
 	builder.WebHost.UseUrls(url);	
 }
 
-var app = builder.Build();
+var app = builder.Build(); // Instantiate the app
 
 if (!app.Environment.IsDevelopment())
 {

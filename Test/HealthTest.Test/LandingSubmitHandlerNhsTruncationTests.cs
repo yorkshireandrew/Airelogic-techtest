@@ -4,7 +4,6 @@ using Xunit;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
-using HealthTest;
 using Microsoft.AspNetCore.Http.Features;
 using System.Threading;
 

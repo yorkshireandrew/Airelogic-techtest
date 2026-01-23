@@ -1,150 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Health Test Questionnaire</title>
-</head>
-<body>
-    <h1>Health Test Questionnaire</h1>
+    <head>
+        <meta charset="UTF-8">
+        <title>Health Test Questionnaire</title>
+    </head>
+    <body>
+        <h1>Health Test Questionnaire</h1>
 
-    <form id="health-form" method="post" action="/landing-submit">
-        <div>
-            <label for="nhs">NHS Number</label><br>
-            <input id="nhs" name="nhs" type="text" pattern="[0-9]{9,10}" inputmode="numeric" maxlength="10" required placeholder="1234567890" title="Enter a 9- or 10-digit NHS number" />
-        </div>
+        <form id="health-form" method="post" action="/landing-submit">
+            <div>
+                <label for="nhs">NHS Number</label><br>
+                <input id="nhs" name="nhs" type="text" pattern="[0-9]{9,10}" inputmode="numeric" maxlength="10" required placeholder="1234567890" title="Enter a 9- or 10-digit NHS number" />
+            </div>
 
-        <div>
-            <label for="surname">Surname</label><br>
-            <input id="surname" name="surname" type="text" required />
-        </div>
+            <div>
+                <label for="surname">Surname</label><br>
+                <input id="surname" name="surname" type="text" required />
+            </div>
 
-        <fieldset>
-            <legend>Date of Birth</legend>
-            <label for="dob-day">Day</label>
-            <input id="dob-day" name="dob_day" type="number" min="1" max="31" required style="width:5rem" />
+            <fieldset>
+                <legend>Date of Birth</legend>
+                <label for="dob-day">Day</label>
+                <input id="dob-day" name="dob_day" type="number" min="1" max="31" required style="width:5rem" />
 
-            <label for="dob-month">Month</label>
-            <input id="dob-month" name="dob_month" type="number" min="1" max="12" required style="width:5rem" />
+                <label for="dob-month">Month</label>
+                <input id="dob-month" name="dob_month" type="number" min="1" max="12" required style="width:5rem" />
 
-            <label for="dob-year">Year</label>
-            <input id="dob-year" name="dob_year" type="number" min="1800" max="2100" required style="width:6rem" />
-        </fieldset>
+                <label for="dob-year">Year</label>
+                <input id="dob-year" name="dob_year" type="number" min="1800" max="2100" required style="width:6rem" />
+            </fieldset>
 
-        <div>
-            <button type="submit">Submit</button>
-        </div>
-    </form>
-    <script>
-        (function(){
-            const nhs = document.getElementById('nhs');
-            const surname = document.getElementById('surname');
-            const day = document.getElementById('dob-day');
-            const month = document.getElementById('dob-month');
-            const year = document.getElementById('dob-year');
-            const form = document.getElementById('health-form');
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+        <script>
+            (function(){
+                const nhs = document.getElementById('nhs');
+                const surname = document.getElementById('surname');
+                const day = document.getElementById('dob-day');
+                const month = document.getElementById('dob-month');
+                const year = document.getElementById('dob-year');
+                const form = document.getElementById('health-form');
 
-            function daysInMonth(y, m) {
-                return new Date(y, m, 0).getDate(); // m is 0-12, Day 0 of next month is last day of current month
-            }
+                function daysInMonth(y, m) {
+                    return new Date(y, m, 0).getDate(); // m is 0-12, Day 0 of next month is last day of current month
+                }
 
-            if (nhs) {
-                nhs.addEventListener('input', () => nhs.setCustomValidity(''));
-                nhs.addEventListener('invalid', () => {
-                    if (nhs.validity.valueMissing || nhs.value.trim() === '') {
-                        nhs.setCustomValidity('Please enter your NHS number');
-                    } else {
-                        nhs.setCustomValidity('NHS number must be a 9 or 10-digit numeric value');
+                if (nhs) {
+                    nhs.addEventListener('input', () => nhs.setCustomValidity(''));
+                    nhs.addEventListener('invalid', () => {
+                        if (nhs.validity.valueMissing || nhs.value.trim() === '') {
+                            nhs.setCustomValidity('Please enter your NHS number');
+                        } else {
+                            nhs.setCustomValidity('NHS number must be a 9 or 10-digit numeric value');
+                        }
+                    });
+                }
+
+                if (surname) {
+                    surname.addEventListener('input', () => surname.setCustomValidity(''));
+                    surname.addEventListener('invalid', () => {
+                        if (surname.validity.valueMissing || surname.value.trim() === '') {
+                            surname.setCustomValidity('Please enter your surname');
+                        }
+                    });
+                }
+
+                function clearDobValidity() {
+                    if (day) day.setCustomValidity('');
+                    if (month) month.setCustomValidity('');
+                    if (year) year.setCustomValidity('');
+                }
+
+                function validateDob() {
+                    if (!day || !month || !year) return true;
+                    const d = parseInt(day.value, 10);
+                    const m = parseInt(month.value, 10);
+                    const y = parseInt(year.value, 10);
+
+                    if (Number.isNaN(d) || Number.isNaN(m) || Number.isNaN(y)) {
+                        const msg = 'Please enter a valid numeric date of birth';
+                        day.setCustomValidity(msg);
+                        return false;
                     }
-                });
-            }
 
-            if (surname) {
-                surname.addEventListener('input', () => surname.setCustomValidity(''));
-                surname.addEventListener('invalid', () => {
-                    if (surname.validity.valueMissing || surname.value.trim() === '') {
-                        surname.setCustomValidity('Please enter your surname');
+                    if (m < 1 || m > 12) {
+                        month.setCustomValidity('Month must be between 1 and 12');
+                        return false;
                     }
-                });
-            }
 
-            function clearDobValidity() {
-                if (day) day.setCustomValidity('');
-                if (month) month.setCustomValidity('');
-                if (year) year.setCustomValidity('');
-            }
+                    const dim = daysInMonth(y, m);
+                    if (d < 1 || d > dim) {
+                        day.setCustomValidity('Day is invalid for the selected month and year');
+                        return false;
+                    }
 
-            function validateDob() {
-                if (!day || !month || !year) return true;
-                const d = parseInt(day.value, 10);
-                const m = parseInt(month.value, 10);
-                const y = parseInt(year.value, 10);
-
-                if (Number.isNaN(d) || Number.isNaN(m) || Number.isNaN(y)) {
-                    const msg = 'Please enter a valid numeric date of birth';
-                    day.setCustomValidity(msg);
-                    return false;
-                }
-
-                if (m < 1 || m > 12) {
-                    month.setCustomValidity('Month must be between 1 and 12');
-                    return false;
-                }
-
-                const dim = daysInMonth(y, m);
-                if (d < 1 || d > dim) {
-                    day.setCustomValidity('Day is invalid for the selected month and year');
-                    return false;
-                }
-
-                // Prevent future dates
-                const dob = new Date(y, m - 1, d);
-                const today = new Date();
-                if (dob > today) {
-                    day.setCustomValidity('Date of birth cannot be in the future');
-                    return false;
-                }
-
-                clearDobValidity();
-                return true;
-            }
-
-            if (day) day.addEventListener('input', () => day.setCustomValidity(''));
-            if (month) month.addEventListener('input', () => month.setCustomValidity(''));
-            if (year) year.addEventListener('input', () => year.setCustomValidity(''));
-
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    // Trim NHS and surname values before validation
-                    if (nhs) nhs.value = nhs.value.trim();
-                    if (surname) surname.value = surname.value.trim();
+                    // Prevent future dates
+                    const dob = new Date(y, m - 1, d);
+                    const today = new Date();
+                    if (dob > today) {
+                        day.setCustomValidity('Date of birth cannot be in the future');
+                        return false;
+                    }
 
                     clearDobValidity();
+                    return true;
+                }
 
-                    // Ensure surname is not empty after trimming
-                    if (surname && surname.value === '') {
-                        surname.setCustomValidity('Please enter your surname');
-                        e.preventDefault();
-                        if (surname.reportValidity) surname.reportValidity();
-                        return;
-                    }
+                if (day) day.addEventListener('input', () => day.setCustomValidity(''));
+                if (month) month.addEventListener('input', () => month.setCustomValidity(''));
+                if (year) year.addEventListener('input', () => year.setCustomValidity(''));
 
-                    if (!validateDob()) {
-                        e.preventDefault();
-                        if (day && day.reportValidity) day.reportValidity();
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        // Trim NHS and surname values before validation
+                        if (nhs) nhs.value = nhs.value.trim();
+                        if (surname) surname.value = surname.value.trim();
+
+                        clearDobValidity();
+
+                        // Ensure surname is not empty after trimming
+                        if (surname && surname.value === '') {
+                            surname.setCustomValidity('Please enter your surname');
+                            e.preventDefault();
+                            if (surname.reportValidity) surname.reportValidity();
+                            return;
+                        }
+
+                        if (!validateDob()) {
+                            e.preventDefault();
+                            if (day && day.reportValidity) day.reportValidity();
+                        }
+                    });
+                }
+                // Clear the form when the page loads to ensure new users cannot see stale values of a previous user
+                document.addEventListener('DOMContentLoaded', function () {
+                    try {
+                        if (form) {
+                            form.reset();
+                        }
+                    } catch (e) {
+                        // ignore
                     }
                 });
-            }
-            // Clear the form when the page loads to ensure new users cannot see stale values of a previous user
-            document.addEventListener('DOMContentLoaded', function () {
-                try {
-                    if (form) {
-                        form.reset();
-                    }
-                } catch (e) {
-                    // ignore
-                }
-            });
-        })();
-    </script>
-</body>
+            })();
+        </script>
+    </body>
 </html>

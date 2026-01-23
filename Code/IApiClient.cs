@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
+namespace HealthTest;
 
-namespace HealthTest
+public interface IApiClient
 {
-    public interface IApiClient
-    {
-        Task<IPatientModel?> GetPatientFromNhsNumberAsync(string lookupValue);
-    }
+    Task<IPatientModel?> GetPatientFromNhsNumberAsync(string lookupValue);
 }
+

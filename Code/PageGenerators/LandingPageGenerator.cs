@@ -1,6 +1,3 @@
-using System.IO;
-using System.Net;
-
 namespace HealthTest;
 
 // Renders a static landing page from a specified template file

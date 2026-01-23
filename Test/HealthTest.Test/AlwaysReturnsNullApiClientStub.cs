@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using HealthTest;
 
 namespace HealthTest.Test
 {

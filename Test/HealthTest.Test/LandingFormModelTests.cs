@@ -1,4 +1,3 @@
-using HealthTest;
 using Xunit;
 
 namespace HealthTest.Test

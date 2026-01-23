@@ -1,7 +1,7 @@
-namespace HealthTest
+namespace HealthTest;
+
+public interface IAgeBandCalculator
 {
-    public interface IAgeBandCalculator
-    {
-        int CalculateAgeBand(int age);
-    }
+    int CalculateAgeBand(int age);
 }
+

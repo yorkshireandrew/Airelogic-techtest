@@ -7,12 +7,9 @@ public static class NhsNumberValidator
     /// <summary>
     /// Validates an NHS number using the Modulus 11 algorithm.
     /// </summary>
-    /// <param name="nhsNumber">10-digit NHS number (spaces allowed)</param>
     /// <returns>true if valid; otherwise false</returns>
     public static bool IsValid(string nhsNumber)
     {
-        //nhsNumber="1112223339";
-
         if (string.IsNullOrWhiteSpace(nhsNumber))
             return false;
 

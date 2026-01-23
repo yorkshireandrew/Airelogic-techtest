@@ -1,8 +1,3 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-
 namespace HealthTest;
 
 public class LandingSubmitHandler
@@ -87,18 +82,6 @@ public class LandingSubmitHandler
         {
             _logger?.LogWarning("Invalid NHS number format received.");
         }
-    }
-
-    protected virtual LandingFormModel CreateLandingFormModelFromForm(IFormCollection form)
-    {
-        return new LandingFormModel
-        {
-            nhs = form["nhs"].ToString().Trim(),
-            surname = form["surname"].ToString().Trim(),
-            day = form["dob_day"].ToString().Trim(),
-            month = form["dob_month"].ToString().Trim(),
-            year = form["dob_year"].ToString().Trim()
-        };
     }
 
     private IResult SendInvalidNhsNumberResponse(){
