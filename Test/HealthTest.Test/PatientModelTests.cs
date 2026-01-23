@@ -62,20 +62,6 @@ namespace HealthTest.Test
             var patient = new PatientModel { born = born };
             Assert.Throws<System.FormatException>(() => patient.DateOfBirthMatches("1", "2", "1990"));
         }
-        
-        [Theory]
-        [InlineData("01-01-2000", "2026-01-02", 26)]  // Birthday has occurred this year
-        [InlineData("22-01-2000", "2026-01-22", 26)]  // Birthday is today
-        [InlineData("23-01-2000", "2026-01-22", 25)]  // Birthday has not occurred yet this year
-        [InlineData("29-02-2000", "2025-02-28", 24)]  // Leap year birthday, not leap year now
-        [InlineData("29-02-2000", "2024-02-29", 24)]  // Leap year birthday, leap year now
-        [InlineData("15-06-2000", "2026-01-22", 25)]  // Birthday month not reached yet, but day is higher than birth day
-        public void GetAge_WorksAsExpected(string born, string nowString, int expectedAge)
-        {
-            var now = DateTime.Parse(nowString);
-            var patient = new PatientModel { born = born };
-            Assert.Equal(expectedAge, patient.GetAge(now));
-        }
 
         [Theory]
         [InlineData("01-01-2000", "2026-01-02", 26)]  // Birthday has occurred this year
@@ -95,10 +81,10 @@ namespace HealthTest.Test
         [InlineData("")]
         [InlineData("01-02")]
         [InlineData("01-02-1990-05")]
-        public void GetAge_ThrowsFormatException_OnInvalidFormat(string born)
+        public void CalculateAge_ThrowsFormatException_OnInvalidFormat(string born)
         {
             var patient = new PatientModel { born = born };
-            Assert.Throws<System.FormatException>(() => patient.GetAge(DateTime.Today));
+            Assert.Throws<System.FormatException>(() => patient.CalculateAge(DateTime.Today));
         }
     }
 }
