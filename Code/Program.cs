@@ -14,7 +14,9 @@ builder.Services.AddSingleton(appSettings);
 // Register ApiClient and its interface with an HttpClient
 builder.Services.AddHttpClient<IApiClient, ApiClient>();
 builder.Services.AddHttpClient<IAgeBandCalculator, AgeBandCalculator>();
+builder.Services.AddSingleton<LandingFormParser>();
 builder.Services.AddSingleton<LandingSubmitHandler>();
+builder.Services.AddSingleton<QuestionareSubmitHandler>();
 
 builder.Services.AddSingleton<QuestionarePageGenerator>(provider =>	
 		new QuestionarePageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), appSettings)
@@ -66,6 +68,12 @@ app.MapGet("/Questionare", async (QuestionarePageGenerator generator, HttpContex
 
 // Delegate POST to handler from DI
 app.MapPost("/landing-submit", async (LandingSubmitHandler handler, HttpContext ctx) =>
+{
+	return await handler.Handle(ctx);
+});
+
+// Delegate POST to handler from DI
+app.MapPost("/questionare-submit", async (QuestionareSubmitHandler handler, HttpContext ctx) =>
 {
 	return await handler.Handle(ctx);
 });
