@@ -10,7 +10,7 @@ public class AnswerPageGenerator
     public AnswerPageGenerator(string templatePath)
     {
         var file = Path.Combine(templatePath, "Answer.html")  ;
-        var _template = File.ReadAllText(file);
+        _template = File.ReadAllText(file);
     }
 
     public IResult Generate(string message)
