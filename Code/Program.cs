@@ -16,10 +16,10 @@ builder.Services.AddHttpClient<IApiClient, ApiClient>();
 builder.Services.AddHttpClient<IAgeBandCalculator, AgeBandCalculator>();
 builder.Services.AddSingleton<LandingFormParser>();
 builder.Services.AddSingleton<LandingSubmitHandler>();
-builder.Services.AddSingleton<QuestionareSubmitHandler>();
+builder.Services.AddSingleton<QuestionnaireSubmitHandler>();
 
-builder.Services.AddSingleton<QuestionarePageGenerator>(provider =>	
-		new QuestionarePageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), appSettings)
+builder.Services.AddSingleton<QuestionnairePageGenerator>(provider =>
+	new QuestionnairePageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), appSettings)
 );
 
 var host = string.IsNullOrWhiteSpace(appSettings.Host) ? "localhost" : appSettings.Host;
@@ -57,8 +57,8 @@ app.MapGet("/", async (HttpContext ctx) =>
 	await ctx.Response.WriteAsync(html);
 });
 
-// Serve the Questionare page
-app.MapGet("/Questionare", async (QuestionarePageGenerator generator, HttpContext ctx) =>
+// Serve the Questionnaire page
+app.MapGet("/Questionnaire", async (QuestionnairePageGenerator generator, HttpContext ctx) =>
 {
 	var ageBand = ctx.Request.Query["ab"].ToString() ?? string.Empty;
 	var html = generator.Generate(ageBand);
@@ -73,7 +73,7 @@ app.MapPost("/landing-submit", async (LandingSubmitHandler handler, HttpContext 
 });
 
 // Delegate POST to handler from DI
-app.MapPost("/questionare-submit", async (QuestionareSubmitHandler handler, HttpContext ctx) =>
+app.MapPost("/questionnaire-submit", async (QuestionnaireSubmitHandler handler, HttpContext ctx) =>
 {
 	return await handler.Handle(ctx);
 });

@@ -18,7 +18,7 @@ dotnet run
 ```
 
 ## Production deployment steps
-IMPORTANT: The questionare involves personal sensitive data. It should only be used behind HTTPS 
+IMPORTANT: The questionnaire involves personal sensitive data. It should only be used behind HTTPS 
 1) Install prerequisites: IIS (Web Server role) + .NET 8 Hosting Bundle on the Windows server.
 2) Publish the app: dotnet publish -c Release -o ./publish.
 3) Ensure web.config/ANCM present (publish normally adds it); choose InProcess hosting (recommended) or OutOfProcess (IIS as reverse proxy to Kestrel).

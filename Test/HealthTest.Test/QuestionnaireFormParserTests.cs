@@ -6,7 +6,7 @@ using Xunit;
 
 namespace HealthTest.Test
 {
-    public class QuestionareFormParserTests
+    public class QuestionnaireFormParserTests
     {
         [Fact]
         public void Parse_WithTotalQuestionsAndAnswers_ReturnsExpectedModel()
@@ -21,7 +21,7 @@ namespace HealthTest.Test
             };
 
             var form = new FormCollection(dict);
-            var parser = new QuestionareFormParser();
+            var parser = new QuestionnaireFormParser();
 
             var model = parser.Parse(form);
 
@@ -43,7 +43,7 @@ namespace HealthTest.Test
             };
 
             var form = new FormCollection(dict);
-            var parser = new QuestionareFormParser();
+            var parser = new QuestionnaireFormParser();
 
             var model = parser.Parse(form);
 

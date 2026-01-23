@@ -74,7 +74,7 @@ public class LandingSubmitHandler
 
         if (ageBand == -1) return Answer(_notEligibleMessage);
 
-        return Results.Redirect($"/Questionare?ab={ageBand}");
+        return Results.Redirect($"/Questionnaire?ab={ageBand}");
     }
 
     private void LogInvalidNhsFormat(LandingFormModel landing)
