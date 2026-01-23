@@ -13,6 +13,8 @@ builder.Services.AddSingleton(appSettings);
 
 // Register ApiClient and its interface with an HttpClient
 builder.Services.AddHttpClient<IApiClient, ApiClient>();
+builder.Services.AddHttpClient<IAgeBandCalculator, AgeBandCalculator>();
+builder.Services.AddSingleton<LandingSubmitHandler>();
 
 var host = string.IsNullOrWhiteSpace(appSettings.Host) ? "localhost" : appSettings.Host;
 var port = appSettings.Port <= 0 ? 5000 : appSettings.Port;
@@ -31,9 +33,6 @@ else
 {
 	builder.WebHost.UseUrls(url);
 }
-
-// Register handler with DI
-builder.Services.AddSingleton<LandingSubmitHandler>();
 
 var app = builder.Build();
 

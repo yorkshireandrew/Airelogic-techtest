@@ -3,98 +3,108 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
-namespace HealthTest
+namespace HealthTest;
+
+public class LandingSubmitHandler
 {
-    public class LandingSubmitHandler
+    private readonly ILogger<LandingSubmitHandler>? _logger;
+    private readonly IApiClient _apiClient;
+    private readonly IAgeBandCalculator _ageBandCalculator;
+    private readonly bool _logPersonallyIdentifiableData;
+    private readonly bool _informUserWhenNhsNumberFormatIncorrect;
+    private readonly string _patientNotFoundMessage;
+    private readonly string _notEligibleMessage;
+    public LandingSubmitHandler(IApiClient apiClient, IAgeBandCalculator ageBandCalculator, ILogger<LandingSubmitHandler>? logger = null, AppSettings? config = null)
     {
-        private readonly ILogger<LandingSubmitHandler>? _logger;
-        private readonly IApiClient _apiClient;
-        private readonly bool _logPersonallyIdentifiableData;
-        private readonly bool _informUserWhenNhsNumberFormatIncorrect;
-        private readonly string _patientNotFoundMessage;
-        public LandingSubmitHandler(IApiClient apiClient, ILogger<LandingSubmitHandler>? logger = null, AppSettings? config = null)
+        _apiClient = apiClient;
+        _logger = logger;
+        _ageBandCalculator = ageBandCalculator;
+        _logPersonallyIdentifiableData = config?.LogPersonallyIdentifiableData ?? false;
+        _patientNotFoundMessage = config?.PatientNotFoundMessage ?? "Your details could not be found";
+        _notEligibleMessage = config?.NotEligibleMessage ?? "You are not eligible for this service";
+        _informUserWhenNhsNumberFormatIncorrect = config?.InformUserWhenNhsNumberFormatIncorrect ?? false;
+    }
+
+    public async Task<IResult> Handle(HttpContext ctx)
+    {
+        var form = await ctx.Request.ReadFormAsync();
+        
+        var landing = CreateLandingFormModelFromForm(form);
+        if (_logPersonallyIdentifiableData) _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; DOB={landing.day}-{landing.month}-{landing.year}");
+
+        if (!landing.NhsIsValid(landing.nhs))
         {
-            _apiClient = apiClient;
-            _logger = logger;
-            _logPersonallyIdentifiableData = config?.LogPersonallyIdentifiableData ?? false;
-            _patientNotFoundMessage = config?.PatientNotFoundMessage ?? "Your details could not be found";
-            _informUserWhenNhsNumberFormatIncorrect = config?.InformUserWhenNhsNumberFormatIncorrect ?? false;
+            LogInvalidNhsFormat(landing);
+            return SendInvalidNhsNumberResponse();
         }
 
-        public async Task<IResult> Handle(HttpContext ctx)
+        // Call the API client with the provided NHS number
+        try{
+            return await CreateRedirectToQustionare(landing).ConfigureAwait(false);
+        }
+        catch(ApiServerException ex)
         {
-            var form = await ctx.Request.ReadFormAsync();
-            
-            var landing = CreateLandingFormModelFromForm(form);
-             if (_logPersonallyIdentifiableData) _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; DOB={landing.day}-{landing.month}-{landing.year}");
-
-            if (!landing.NhsIsValid(landing.nhs))
+            if(ex.Message.ToString().Contains("invalid nhs number", StringComparison.CurrentCultureIgnoreCase))
             {
-                LogInvalidNhsFormat(landing);
                 return SendInvalidNhsNumberResponse();
             }
 
-            // Call the API client with the provided NHS number
-            try{
-                var nineDigitNhs = landing.nhs.Length == 10 ? landing.nhs.Substring(0, 9) : landing.nhs;
-                var patient = await _apiClient.GetPatientFromNhsNumberAsync(nineDigitNhs).ConfigureAwait(false);
-                if (patient == null)  return Answer(_patientNotFoundMessage);
-
-                if(patient.SurnameMatches(landing.surname) == false || patient.NhsNumberMatches(nineDigitNhs) == false || patient.DateOfBirthMatches(landing.day, landing.month, landing.year) == false)
-                {
-                    return Answer(_patientNotFoundMessage);
-                }
-
-                
-                return Results.Ok(patient);
-            }
-            catch(ApiServerException ex)
-            {
-                if(ex.Message.ToString().Contains("invalid nhs number", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    return SendInvalidNhsNumberResponse();
-                }
-
-                _logger?.LogError($"API server error: {ex.Message}");
-                return Answer("An error occurred while processing your request. Please try again later.");
-            }
+            _logger?.LogError($"API server error: {ex.Message}");
+            return Answer("An error occurred while processing your request. Please try again later.");
         }
+    }
 
-        protected virtual void LogInvalidNhsFormat(LandingFormModel landing)
+    private async Task<IResult> CreateRedirectToQustionare(LandingFormModel landing)
+    {
+        var nineDigitNhs = landing.nhs.Length == 10 ? landing.nhs.Substring(0, 9) : landing.nhs;
+        var patient = await _apiClient.GetPatientFromNhsNumberAsync(nineDigitNhs).ConfigureAwait(false);
+        if (patient == null) return Answer(_patientNotFoundMessage);
+
+        if (patient.SurnameMatches(landing.surname) == false || patient.NhsNumberMatches(nineDigitNhs) == false || patient.DateOfBirthMatches(landing.day, landing.month, landing.year) == false)
         {
-            if (_logPersonallyIdentifiableData)
-            {
-                _logger?.LogWarning($"Invalid NHS number format received: {landing.nhs}");
-            }
-            else
-            {
-                _logger?.LogWarning("Invalid NHS number format received.");
-            }
-        }
-
-        protected virtual LandingFormModel CreateLandingFormModelFromForm(IFormCollection form)
-        {
-            return new LandingFormModel
-            {
-                nhs = form["nhs"].ToString().Trim(),
-                surname = form["surname"].ToString().Trim(),
-                day = form["dob_day"].ToString().Trim(),
-                month = form["dob_month"].ToString().Trim(),
-                year = form["dob_year"].ToString().Trim()
-            };
-        }
-
-        private Microsoft.AspNetCore.Http.IResult SendInvalidNhsNumberResponse(){
-            if (_informUserWhenNhsNumberFormatIncorrect == true) return Answer("NHS number format is incorrect"); 
             return Answer(_patientNotFoundMessage);
         }
 
-        protected Microsoft.AspNetCore.Http.IResult Answer(string message)
+        var age = patient.CalculateAge(System.DateTime.Today);
+        if (_logPersonallyIdentifiableData) _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; Age={age}");
+        var ageBand = _ageBandCalculator.CalculateAgeBand(age);
+
+        return Results.Redirect($"/Questionare?ab={ageBand}");
+    }
+
+    private void LogInvalidNhsFormat(LandingFormModel landing)
+    {
+        if (_logPersonallyIdentifiableData)
         {
-            var encodedMessage = Uri.EscapeDataString(message);
-            return Results.Redirect($"/Answer?message={encodedMessage}");
+            _logger?.LogWarning($"Invalid NHS number format received: {landing.nhs}");
         }
+        else
+        {
+            _logger?.LogWarning("Invalid NHS number format received.");
+        }
+    }
 
+    protected virtual LandingFormModel CreateLandingFormModelFromForm(IFormCollection form)
+    {
+        return new LandingFormModel
+        {
+            nhs = form["nhs"].ToString().Trim(),
+            surname = form["surname"].ToString().Trim(),
+            day = form["dob_day"].ToString().Trim(),
+            month = form["dob_month"].ToString().Trim(),
+            year = form["dob_year"].ToString().Trim()
+        };
+    }
 
+    private IResult SendInvalidNhsNumberResponse(){
+        if (_informUserWhenNhsNumberFormatIncorrect == true) return Answer("NHS number format is incorrect"); 
+        return Answer(_patientNotFoundMessage);
+    }
+
+    private IResult Answer(string message)
+    {
+        var encodedMessage = Uri.EscapeDataString(message);
+        return Results.Redirect($"/Answer?message={encodedMessage}");
     }
 }
+

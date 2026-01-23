@@ -28,7 +28,7 @@ namespace HealthTest.Test
             var ctx = CreateContextWithForm(dict);
             var logger = new TestLogger();
             var config = new AppSettings { LogPersonallyIdentifiableData = true };
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), logger, config);
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), logger, config);
 
             await handler.Handle(ctx);
 
@@ -50,7 +50,7 @@ namespace HealthTest.Test
             var ctx = CreateContextWithForm(dict);
             var logger = new TestLogger();
             var config = new AppSettings { LogPersonallyIdentifiableData = false }; // PID logging disabled
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), logger, config);
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), logger, config);
 
             await handler.Handle(ctx);
 
@@ -70,7 +70,7 @@ namespace HealthTest.Test
             };
 
             var ctx = CreateContextWithForm(dict); 
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub()); // Always returns null patient
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings())); // Always returns null patient
 
             var result = await handler.Handle(ctx);
 
@@ -92,7 +92,7 @@ namespace HealthTest.Test
 
             var ctx = CreateContextWithForm(dict); 
             var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false }; // Setting for generic message
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), null, config); // Always returns null patient
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), null, config); // Always returns null patient
 
             var result = await handler.Handle(ctx);
 
@@ -114,7 +114,7 @@ namespace HealthTest.Test
 
             var ctx = CreateContextWithForm(dict); 
             var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = true }; // Setting for helpful message
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), null, config); // Always returns null patient
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), null, config); // Always returns null patient
 
             var result = await handler.Handle(ctx);
 

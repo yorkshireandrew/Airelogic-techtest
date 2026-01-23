@@ -19,7 +19,7 @@ namespace HealthTest.Test
             var mockApiClient = new Mock<IApiClient>();
             var mockLogger = new Mock<ILogger<LandingSubmitHandler>>();
             var config = new AppSettings();
-            var handler = new LandingSubmitHandler(mockApiClient.Object, mockLogger.Object, config);
+            var handler = new LandingSubmitHandler(mockApiClient.Object, new AgeBandCalculator(new AppSettings()), mockLogger.Object, config);
 
             // Use a valid 10-digit NHS number (Modulus 11): 9434765919
             var formCollection = new FormCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
@@ -53,7 +53,7 @@ namespace HealthTest.Test
             var mockApiClient = new Mock<IApiClient>();
             var mockLogger = new Mock<ILogger<LandingSubmitHandler>>();
             var config = new AppSettings();
-            var handler = new LandingSubmitHandler(mockApiClient.Object, mockLogger.Object, config);
+            var handler = new LandingSubmitHandler(mockApiClient.Object, new AgeBandCalculator(new AppSettings()), mockLogger.Object, config);
 
             var formCollection = new FormCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
             {

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using HealthTest;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Xunit;
@@ -11,7 +10,13 @@ namespace HealthTest.Test
         // Wrapper to expose protected method for testing
         private class TestLandingSubmitHandler : LandingSubmitHandler
         {
-            public TestLandingSubmitHandler() : base(new AlwaysReturnsNullApiClientStub()) { }
+            private class DummyAgeBandCalculator : IAgeBandCalculator
+            {
+                public int CalculateAgeBand(int age) => 0;
+            }
+
+            public TestLandingSubmitHandler()
+                : base(new AlwaysReturnsNullApiClientStub(), new DummyAgeBandCalculator(), logger: null, config: null) { }
 
             public LandingFormModel CallCreate(IFormCollection form) => CreateLandingFormModelFromForm(form);
         }

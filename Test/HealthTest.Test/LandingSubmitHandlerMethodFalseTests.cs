@@ -49,7 +49,7 @@ namespace HealthTest.Test
             var apiMock = new Mock<IApiClient>();
             apiMock.Setup(a => a.GetPatientFromNhsNumberAsync(It.IsAny<string>())).ReturnsAsync(patientMock.Object);
 
-            var handler = new LandingSubmitHandler(apiMock.Object);
+            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(new AppSettings()));
 
             var result = await handler.Handle(ctx);
 
@@ -79,7 +79,7 @@ namespace HealthTest.Test
             var apiMock = new Mock<IApiClient>();
             apiMock.Setup(a => a.GetPatientFromNhsNumberAsync(It.IsAny<string>())).ReturnsAsync(patientMock.Object);
 
-            var handler = new LandingSubmitHandler(apiMock.Object);
+            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(new AppSettings()));
 
             var result = await handler.Handle(ctx);
 
@@ -109,7 +109,7 @@ namespace HealthTest.Test
             var apiMock = new Mock<IApiClient>();
             apiMock.Setup(a => a.GetPatientFromNhsNumberAsync(It.IsAny<string>())).ReturnsAsync(patientMock.Object);
 
-            var handler = new LandingSubmitHandler(apiMock.Object);
+            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(new AppSettings()));
 
             var result = await handler.Handle(ctx);
 
