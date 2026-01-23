@@ -5,10 +5,38 @@ namespace HealthTest;
 
 public class QuestionnaireSubmitHandler
 {
-    // No-op stub for questionnaire submission handling
-    public Task<IResult> Handle(HttpContext ctx)
+  private QuestionnaireFormParser _parser;
+  private QuestionnaireScorer _scorer;
+
+  private readonly string _welldoneMessage;
+  private readonly string _tellOffMessage;
+
+  public QuestionnaireSubmitHandler(QuestionnaireFormParser parser, QuestionnaireScorer scorer, AppSettings config)
+  {
+      _parser = parser;
+      _scorer = scorer;
+      _welldoneMessage = config.WelldoneMessage;
+      _tellOffMessage = config.TellOffMessage;
+  }
+    
+  // No-op stub for questionnaire submission handling
+  public async Task<IResult> Handle(HttpContext ctx)
+  {
+    var form = await ctx.Request.ReadFormAsync();
+    var answers = _parser.Parse(form);
+    var score = _scorer.Score(answers);
+    var isOverThreshold = _scorer.IsOverThreshold(score);
+
+    if(isOverThreshold){
+      return Answer(_tellOffMessage);
+    }else{
+      return Answer(_welldoneMessage);
+    }
+  }
+
+  private IResult Answer(string message)
     {
-        // Currently a noop; return HTTP 200 OK
-        return Task.FromResult(Results.Ok());
+        var encodedMessage = Uri.EscapeDataString(message);
+        return Results.Redirect($"/Answer?message={encodedMessage}");
     }
 }

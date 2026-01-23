@@ -1,7 +1,4 @@
 using HealthTest;
-//using System.IO;
-//using Microsoft.AspNetCore.Http;
-//using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,15 +8,28 @@ var appSettings = new AppSettings();
 builder.Configuration.Bind(appSettings);
 builder.Services.AddSingleton(appSettings);
 
-// Register ApiClient and its interface with an HttpClient
+// Landing Submit Handler dependencies
 builder.Services.AddHttpClient<IApiClient, ApiClient>();
 builder.Services.AddHttpClient<IAgeBandCalculator, AgeBandCalculator>();
 builder.Services.AddSingleton<LandingFormParser>();
 builder.Services.AddSingleton<LandingSubmitHandler>();
+
+// Questionnaire Submit Handler dependencies
+builder.Services.AddSingleton<QuestionnaireFormParser>();
+builder.Services.AddSingleton<QuestionnaireScorer>();
 builder.Services.AddSingleton<QuestionnaireSubmitHandler>();
+
+builder.Services.AddSingleton<LandingPageGenerator>(provider =>
+	new LandingPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), "Landing.html"	)
+);
+
 
 builder.Services.AddSingleton<QuestionnairePageGenerator>(provider =>
 	new QuestionnairePageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), appSettings)
+);
+
+builder.Services.AddSingleton<AnswerPageGenerator>(provider =>
+	new AnswerPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"))
 );
 
 var host = string.IsNullOrWhiteSpace(appSettings.Host) ? "localhost" : appSettings.Host;
@@ -37,7 +47,7 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-	builder.WebHost.UseUrls(url);
+	builder.WebHost.UseUrls(url);	
 }
 
 var app = builder.Build();
@@ -49,12 +59,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Serve the static HTML landing page
-app.MapGet("/", async (HttpContext ctx) =>
+app.MapGet("/", async (LandingPageGenerator generator, HttpContext ctx) =>
 {
-	var file = Path.Combine(builder.Environment.ContentRootPath, "Templates", "Landing.html");
-	var html = await System.IO.File.ReadAllTextAsync(file);
-	ctx.Response.ContentType = "text/html";
-	await ctx.Response.WriteAsync(html);
+	return generator.Generate();
 });
 
 // Serve the Questionnaire page
@@ -66,27 +73,21 @@ app.MapGet("/Questionnaire", async (QuestionnairePageGenerator generator, HttpCo
 	await ctx.Response.WriteAsync(html);
 });
 
-// Delegate POST to handler from DI
+// Serve Answer page (GET redirects)
+app.MapGet("/Answer", async (AnswerPageGenerator generator, HttpContext ctx) =>
+{
+	var message = ctx.Request.Query["message"].ToString() ?? string.Empty;
+	return generator.Generate(message);
+});
+
 app.MapPost("/landing-submit", async (LandingSubmitHandler handler, HttpContext ctx) =>
 {
 	return await handler.Handle(ctx);
 });
 
-// Delegate POST to handler from DI
 app.MapPost("/questionnaire-submit", async (QuestionnaireSubmitHandler handler, HttpContext ctx) =>
 {
 	return await handler.Handle(ctx);
-});
-
-// Serve the response GET page with `message` query parameter
-app.MapGet("/Answer", async (HttpContext ctx) =>
-{
-	var message = ctx.Request.Query["message"].ToString() ?? string.Empty;
-	var file = Path.Combine(builder.Environment.ContentRootPath, "Templates", "Answer.html");
-	var html = await System.IO.File.ReadAllTextAsync(file);
-	html = html.Replace("{{message}}", System.Net.WebUtility.HtmlEncode(message)); // Insert message
-	ctx.Response.ContentType = "text/html";
-	await ctx.Response.WriteAsync(html);
 });
 
 app.Logger.LogInformation("Listening on {Url}", url);

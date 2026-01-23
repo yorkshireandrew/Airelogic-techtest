@@ -91,7 +91,9 @@ namespace HealthTest.Test
             };
 
             var ctx = CreateContextWithForm(dict); 
-            var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false }; // Setting for generic message
+            var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false,
+            PatientNotFoundMessage = "Your details could not be found"
+            }; // Setting for generic message
             var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), null, config); // Always returns null patient
 
             var result = await handler.Handle(ctx);

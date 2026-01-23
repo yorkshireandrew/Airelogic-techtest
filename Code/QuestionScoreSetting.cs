@@ -2,6 +2,6 @@ namespace HealthTest;
 
 public class QuestionScoreSetting
 {
-    public bool ScoreOnNo { get; set; }
+    public bool IsScoreOnNo { get; set; }
     public List<int> AgeGroupScores { get; set; }
 }
