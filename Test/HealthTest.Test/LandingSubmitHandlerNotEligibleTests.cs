@@ -44,7 +44,7 @@ namespace HealthTest.Test
             var result = await handler.Handle(ctx);
 
             var redirect = Assert.IsType<RedirectHttpResult>(result);
-            Assert.Equal("/Questionare?ab=-1", redirect.Url);
+            Assert.Equal("/Answer?message=You%20are%20not%20eligible%20for%20this%20service", redirect.Url);
         }
 
         private DefaultHttpContext CreateContextWithForm(Dictionary<string, StringValues> values)

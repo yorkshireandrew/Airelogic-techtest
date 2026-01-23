@@ -72,6 +72,8 @@ public class LandingSubmitHandler
         if (_logPersonallyIdentifiableData) _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; Age={age}");
         var ageBand = _ageBandCalculator.CalculateAgeBand(age);
 
+        if (ageBand == -1) return Answer(_notEligibleMessage);
+
         return Results.Redirect($"/Questionare?ab={ageBand}");
     }
 
