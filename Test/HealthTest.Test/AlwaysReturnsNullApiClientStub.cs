@@ -5,9 +5,9 @@ namespace HealthTest.Test
 {
     public class AlwaysReturnsNullApiClientStub : IApiClient
     {
-        public Task<PatientModel?> GetPatientFromNhsNumberAsync(string lookupValue)
+        public Task<IPatientModel?> GetPatientFromNhsNumberAsync(string lookupValue)
         {
-            return Task.FromResult<PatientModel?>(null);
+            return Task.FromResult<IPatientModel?>(null);
         }
     }
 }

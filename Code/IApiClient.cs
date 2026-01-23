@@ -4,6 +4,6 @@ namespace HealthTest
 {
     public interface IApiClient
     {
-        Task<PatientModel?> GetPatientFromNhsNumberAsync(string lookupValue);
+        Task<IPatientModel?> GetPatientFromNhsNumberAsync(string lookupValue);
     }
 }

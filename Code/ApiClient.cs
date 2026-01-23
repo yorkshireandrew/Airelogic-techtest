@@ -18,7 +18,7 @@ namespace HealthTest
             _apiSecret = config?.ApiSecret ?? string.Empty;
         }
 
-        public async Task<PatientModel?> GetPatientFromNhsNumberAsync(string lookupValue)
+        public async Task<IPatientModel?> GetPatientFromNhsNumberAsync(string lookupValue)
         {
             string requestUri = string.IsNullOrEmpty(_endpoint) ? lookupValue : $"{_endpoint}/{lookupValue}";
             using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);

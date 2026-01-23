@@ -1,7 +1,7 @@
 
 namespace HealthTest
 {
-    public class PatientModel
+    public class PatientModel : IPatientModel
     {
         public string nhsNumber { get; set; } = string.Empty;
         public string name { get; set; } = string.Empty;
