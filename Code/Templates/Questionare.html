@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Health Test Questionnaire</title>
+  </head>
+  <body>
+    <h1>Health Test Questionnaire</h1>
+    
+    <form id="health-form" method="post" action="/questionare-submit">
+      <table>
+          <thead>
+              <tr>
+                  <th>Question</th>
+                  <th>Yes</th>
+                  <th>No</th>
+              </tr>
+          </thead>
+          <tbody>
+              {{Questions}}
+          </tbody>
+      </table>
+
+        <input type="hidden" name="AgeBand" value="{{AgeBand}}" />
+        <button type="submit">Submit</button>
+      </form>
+
+    <script>
+      totalQuestions = {{TotalQuestions}};
+      // Holds the names of the selected radio buttons, e.g. 'Y0','N0','Y1'
+      window.selectedAnswers = window.selectedAnswers || new Set();
+
+      function onAnswerChange(el) {
+        try {
+          if (!el || !el.name) return;
+          var name = el.name;
+          var prefix = name.charAt(0);
+          var number = name.substring(1);
+          var otherName = (prefix === 'Y' ? 'N' : 'Y') + number;
+
+          // Uncheck the opposite input(s)
+          var others = document.getElementsByName(otherName);
+          for (var i = 0; i < others.length; i++) {
+            others[i].checked = false;
+          }
+
+          // Update the set of selected answers
+          if (el.checked) {
+            window.selectedAnswers.add(name);
+            window.selectedAnswers.delete(otherName);
+          } else {
+            window.selectedAnswers.delete(name);
+          }
+        } catch (e) {
+          // swallow errors to avoid breaking the page
+        }
+      }
+
+      // Optional helper to get selected answers as an array
+      window.getSelectedAnswers = function() {
+        return Array.from(window.selectedAnswers || []);
+      }
+    </script>
+  </body>
+</html>

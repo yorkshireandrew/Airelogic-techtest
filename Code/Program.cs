@@ -16,6 +16,10 @@ builder.Services.AddHttpClient<IApiClient, ApiClient>();
 builder.Services.AddHttpClient<IAgeBandCalculator, AgeBandCalculator>();
 builder.Services.AddSingleton<LandingSubmitHandler>();
 
+builder.Services.AddSingleton<QuestionarePageGenerator>(provider =>	
+		new QuestionarePageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), appSettings)
+);
+
 var host = string.IsNullOrWhiteSpace(appSettings.Host) ? "localhost" : appSettings.Host;
 var port = appSettings.Port <= 0 ? 5000 : appSettings.Port;
 
@@ -47,6 +51,15 @@ app.MapGet("/", async (HttpContext ctx) =>
 {
 	var file = Path.Combine(builder.Environment.ContentRootPath, "Templates", "Landing.html");
 	var html = await System.IO.File.ReadAllTextAsync(file);
+	ctx.Response.ContentType = "text/html";
+	await ctx.Response.WriteAsync(html);
+});
+
+// Serve the Questionare page
+app.MapGet("/Questionare", async (QuestionarePageGenerator generator, HttpContext ctx) =>
+{
+	var ageBand = ctx.Request.Query["ab"].ToString() ?? string.Empty;
+	var html = generator.Generate(ageBand);
 	ctx.Response.ContentType = "text/html";
 	await ctx.Response.WriteAsync(html);
 });

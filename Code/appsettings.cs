@@ -11,6 +11,7 @@ namespace HealthTest
      public string PatientNotFoundMessage { get; set; } = "Your details could not be found";
      public string NotEligibleMessage { get; set; } = "You are not eligible for this service";
      public List<List<int>> AgeBands { get; set; } = new List<List<int>>();
+     public List<string> Questions { get; set; } = new List<string>();
 
   }
 }
