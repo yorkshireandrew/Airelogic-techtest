@@ -22,7 +22,7 @@
       </table>
 
         <input type="hidden" name="AgeBand" value="{{AgeBand}}" />
-        <button type="submit">Submit</button>
+          <button id="health-submit" type="submit" disabled>Submit</button>
       </form>
 
     <script>
@@ -44,22 +44,41 @@
             others[i].checked = false;
           }
 
-          // Update the set of selected answers
+            // Update the set of selected answers (store the selected input name)
           if (el.checked) {
             window.selectedAnswers.add(name);
             window.selectedAnswers.delete(otherName);
           } else {
             window.selectedAnswers.delete(name);
           }
+            // Update submit button state
+            updateSubmitState();
+        } catch (e) {}
+      }
+
+      function updateSubmitState() {
+        try {
+          var submit = document.getElementById('health-submit');
+          if (!submit) return;
+          submit.disabled = (window.selectedAnswers.size !== Number(totalQuestions));
         } catch (e) {
-          // swallow errors to avoid breaking the page
+          // ignore
         }
       }
 
-      // Optional helper to get selected answers as an array
-      window.getSelectedAnswers = function() {
-        return Array.from(window.selectedAnswers || []);
-      }
+      // Clear all radio selections on initial load and reset tracking set
+      document.addEventListener('DOMContentLoaded', function () {
+        try {
+          var radios = document.querySelectorAll('input[type="radio"]');
+          radios.forEach(function(r) { r.checked = false; });
+          window.selectedAnswers = new Set();
+            // ensure submit is disabled initially
+            var submit = document.getElementById('health-submit');
+            if (submit) submit.disabled = true;
+        } catch (e) {
+          // ignore
+        }
+      });
     </script>
   </body>
 </html>
