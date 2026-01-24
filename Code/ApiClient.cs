@@ -8,12 +8,14 @@ public class ApiClient : IApiClient
     private readonly HttpClient _httpClient;
     private readonly string _endpoint;
     private readonly string _apiSecret;
+    private readonly JsonSerializerOptions _jsonOptions;
 
     public ApiClient(HttpClient httpClient, AppSettings? config = null)
     {
         _httpClient = httpClient;
         _endpoint = config?.ApiEndpoint?.TrimEnd('/') ?? string.Empty;
         _apiSecret = config?.ApiSecret ?? string.Empty;
+        _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
     public async Task<IPatientModel?> GetPatientFromNhsNumberAsync(string lookupValue)
@@ -35,13 +37,11 @@ public class ApiClient : IApiClient
 
         if (resp.IsSuccessStatusCode)
         {
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var result = JsonSerializer.Deserialize<PatientModel>(content, options);
+            var result = JsonSerializer.Deserialize<PatientModel>(content, _jsonOptions);
             return result;
         }
 
-        // For any non-success (and non-404) response, throw ApiServerException containing the response body when available
-        throw new ApiServerException(content);
+        throw new ApiServerException("HTTP Code:" + resp.StatusCode + " " + content);
     }
 }
 
