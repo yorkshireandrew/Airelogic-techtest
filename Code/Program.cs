@@ -31,6 +31,9 @@ builder.Services.AddSingleton<AnswerPageGenerator>(provider =>
 	new AnswerPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"))
 );
 
+// Register configuration validator
+builder.Services.AddSingleton<ConfigValidator>();
+
 var host = string.IsNullOrWhiteSpace(appSettings.Host) ? "localhost" : appSettings.Host;
 var port = appSettings.Port <= 0 ? 5000 : appSettings.Port;
 
@@ -50,6 +53,10 @@ else
 }
 
 var app = builder.Build(); // Instantiate the app
+
+// Run config validation at startup
+var configValidator = app.Services.GetRequiredService<ConfigValidator>();
+configValidator.ValidateSettings();
 
 if (!app.Environment.IsDevelopment())
 {
