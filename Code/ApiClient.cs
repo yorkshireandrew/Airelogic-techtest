@@ -20,7 +20,7 @@ public class ApiClient : IApiClient
 
     public async Task<IPatientModel?> GetPatientFromNhsNumberAsync(string lookupValue)
     {
-        string requestUri = string.IsNullOrEmpty(_endpoint) ? lookupValue : $"{_endpoint}/{lookupValue}";
+        var requestUri = string.IsNullOrEmpty(_endpoint) ? lookupValue : $"{_endpoint}/{lookupValue}";
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
         if (!string.IsNullOrEmpty(_apiSecret))
         {
