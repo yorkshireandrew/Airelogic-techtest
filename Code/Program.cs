@@ -19,10 +19,9 @@ builder.Services.AddSingleton<QuestionnaireFormParser>();
 builder.Services.AddSingleton<QuestionnaireScorer>();
 builder.Services.AddSingleton<QuestionnaireSubmitHandler>();
 
-builder.Services.AddSingleton<LandingPageGenerator>(provider =>
+builder.Services.AddSingleton(provider =>
 	new LandingPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), "Landing.html"	)
 );
-
 
 builder.Services.AddSingleton<QuestionnairePageGenerator>(provider =>
 	new QuestionnairePageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), appSettings)
@@ -59,7 +58,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Serve the static HTML landing page
-app.MapGet("/", async (LandingPageGenerator generator, HttpContext ctx) =>
+app.MapGet("/", (LandingPageGenerator generator, HttpContext ctx) =>
 {
 	return generator.Generate();
 });
@@ -74,7 +73,7 @@ app.MapGet("/Questionnaire", async (QuestionnairePageGenerator generator, HttpCo
 });
 
 // Serve Answer page (GET redirects)
-app.MapGet("/Answer", async (AnswerPageGenerator generator, HttpContext ctx) =>
+app.MapGet("/Answer", (AnswerPageGenerator generator, HttpContext ctx) =>
 {
 	var message = ctx.Request.Query["message"].ToString() ?? string.Empty;
 	return generator.Generate(message);
