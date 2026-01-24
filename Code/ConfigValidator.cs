@@ -13,6 +13,7 @@ public class ConfigValidator
 
   public void ValidateSettings(){
     ValidateApiSettings();
+    ValidateMessageStrings();
     ValidateAgeBands();
     ValidateQuestions();
     ValidateQuestionScoreSettings();
@@ -20,6 +21,37 @@ public class ConfigValidator
     ValidateAgeBandsContinuity();
     ValidateLogPersonallyIdentifiableData();
     ValidateTellOffIfScoreExceeds();
+  }
+
+  public void ValidateMessageStrings()
+  {
+    if (string.IsNullOrWhiteSpace(_config.PatientNotFoundMessage))
+    {
+      var message = "Configuration invalid: PatientNotFoundMessage must not be null or whitespace.";
+      _logger?.LogCritical(message);
+      throw new InvalidOperationException(message);
+    }
+
+    if (string.IsNullOrWhiteSpace(_config.NotEligibleMessage))
+    {
+      var message = "Configuration invalid: NotEligibleMessage must not be null or whitespace.";
+      _logger?.LogCritical(message);
+      throw new InvalidOperationException(message);
+    }
+
+    if (string.IsNullOrWhiteSpace(_config.WelldoneMessage))
+    {
+      var message = "Configuration invalid: WelldoneMessage must not be null or whitespace.";
+      _logger?.LogCritical(message);
+      throw new InvalidOperationException(message);
+    }
+
+    if (string.IsNullOrWhiteSpace(_config.TellOffMessage))
+    {
+      var message = "Configuration invalid: TellOffMessage must not be null or whitespace.";
+      _logger?.LogCritical(message);
+      throw new InvalidOperationException(message);
+    }
   }
 
   public void ValidateAgeBands()
