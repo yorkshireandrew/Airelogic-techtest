@@ -391,7 +391,7 @@ namespace HealthTest.Test
             var logger = new CaptureLogger();
             var settings = new AppSettings
             {
-                AgeBands = [new List<int> { 0, 5 }, new List<int> { 6, 10 }]
+                AgeBands = [[0, 5], [6, 200]]
             };
 
             var sut = new ConfigValidator(logger, settings);
@@ -407,7 +407,7 @@ namespace HealthTest.Test
             var logger = new CaptureLogger();
             var settings = new AppSettings
             {
-                AgeBands = [new List<int> { 0, 5 }, new List<int> { 7, 10 }]
+                AgeBands = [[0, 5], [7, 200]]
             };
 
             var sut = new ConfigValidator(logger, settings);
