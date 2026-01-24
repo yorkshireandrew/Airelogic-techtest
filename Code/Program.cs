@@ -10,7 +10,7 @@ builder.Services.AddSingleton(appSettings);
 
 // Landing Submit Handler dependencies
 builder.Services.AddHttpClient<IApiClient, ApiClient>();
-builder.Services.AddHttpClient<IAgeBandCalculator, AgeBandCalculator>();
+builder.Services.AddSingleton<IAgeBandCalculator, AgeBandCalculator>();
 builder.Services.AddSingleton<ILandingFormParser, LandingFormParser>();
 builder.Services.AddSingleton<LandingSubmitHandler>();
 
