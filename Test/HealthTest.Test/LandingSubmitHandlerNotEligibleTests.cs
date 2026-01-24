@@ -37,7 +37,11 @@ namespace HealthTest.Test
             var ageBandMock = new Mock<IAgeBandCalculator>();
             ageBandMock.Setup(a => a.CalculateAgeBand(It.IsAny<int>())).Returns(-1);
 
-            var handler = new LandingSubmitHandler(apiMock.Object, ageBandMock.Object);
+            var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false,
+                NotEligibleMessage = "You are not eligible for this service"
+            }; // Setting for generic message
+
+            var handler = new LandingSubmitHandler(apiMock.Object, ageBandMock.Object, null, config, null);
 
             var result = await handler.Handle(ctx);
 

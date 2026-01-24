@@ -10,6 +10,7 @@ public class AppSettings
   public string ApiEndpoint { get; set; } = string.Empty;
   public string ApiSecret { get; set; } = string.Empty;
   public bool InformUserWhenNhsNumberFormatIncorrect { get; set; } = false;
+  public bool ValidateNhsCheckDigit { get; set; } = true;
   public string PatientNotFoundMessage { get; set; } = "Your details could not be found...";
   public string NotEligibleMessage { get; set; } = "You are not eligible for this service...";
   public string WelldoneMessage { get; set; } = "Thank you for completing the questionnaire...";

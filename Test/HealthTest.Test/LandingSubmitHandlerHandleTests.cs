@@ -26,7 +26,7 @@ namespace HealthTest.Test
             var ctx = CreateContextWithForm(dict);
             var logger = new TestLogger();
             var config = new AppSettings { LogPersonallyIdentifiableData = true };
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), logger, config);
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), logger, config, null);
 
             await handler.Handle(ctx);
 
@@ -48,7 +48,7 @@ namespace HealthTest.Test
             var ctx = CreateContextWithForm(dict);
             var logger = new TestLogger();
             var config = new AppSettings { LogPersonallyIdentifiableData = false }; // PID logging disabled
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), logger, config);
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), logger, config, null);
 
             await handler.Handle(ctx);
 
@@ -68,7 +68,8 @@ namespace HealthTest.Test
             };
 
             var ctx = CreateContextWithForm(dict); 
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings())); // Always returns null patient
+            var config = new AppSettings { PatientNotFoundMessage = "Your details could not be found" };
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(config), null, config, null); // Always returns null patient
 
             var result = await handler.Handle(ctx);
 
@@ -90,9 +91,9 @@ namespace HealthTest.Test
 
             var ctx = CreateContextWithForm(dict); 
             var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false,
-            PatientNotFoundMessage = "Your details could not be found"
+                PatientNotFoundMessage = "Your details could not be found"
             }; // Setting for generic message
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), null, config); // Always returns null patient
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(config), null, config, null); // Always returns null patient
 
             var result = await handler.Handle(ctx);
 
@@ -114,7 +115,7 @@ namespace HealthTest.Test
 
             var ctx = CreateContextWithForm(dict); 
             var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = true }; // Setting for helpful message
-            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), null, config); // Always returns null patient
+            var handler = new LandingSubmitHandler(new AlwaysReturnsNullApiClientStub(), new AgeBandCalculator(new AppSettings()), null, config, null); // Always returns null patient
 
             var result = await handler.Handle(ctx);
 

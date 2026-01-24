@@ -9,17 +9,20 @@ public class LandingSubmitHandler
     private readonly bool _informUserWhenNhsNumberFormatIncorrect;
     private readonly string _patientNotFoundMessage;
     private readonly string _notEligibleMessage;
-    private readonly LandingFormParser _landingFormParser;
+    private readonly ILandingFormParser _landingFormParser;
 
-    public LandingSubmitHandler(IApiClient apiClient, IAgeBandCalculator ageBandCalculator, ILogger<LandingSubmitHandler>? logger = null, AppSettings? config = null, LandingFormParser? landingFormParser = null)
+    private readonly bool _validateNhsCheckDigit;
+
+    public LandingSubmitHandler(IApiClient apiClient, IAgeBandCalculator ageBandCalculator, ILogger<LandingSubmitHandler>? logger, AppSettings config, ILandingFormParser? landingFormParser)
     {
         _apiClient = apiClient;
         _logger = logger;
         _ageBandCalculator = ageBandCalculator;
-        _logPersonallyIdentifiableData = config?.LogPersonallyIdentifiableData ?? false;
-        _patientNotFoundMessage = config?.PatientNotFoundMessage ?? "Your details could not be found";
-        _notEligibleMessage = config?.NotEligibleMessage ?? "You are not eligible for this service";
-        _informUserWhenNhsNumberFormatIncorrect = config?.InformUserWhenNhsNumberFormatIncorrect ?? false;
+        _logPersonallyIdentifiableData = config.LogPersonallyIdentifiableData;
+        _patientNotFoundMessage = config.PatientNotFoundMessage;
+        _notEligibleMessage = config.NotEligibleMessage;
+        _informUserWhenNhsNumberFormatIncorrect = config.InformUserWhenNhsNumberFormatIncorrect;
+        _validateNhsCheckDigit = config.ValidateNhsCheckDigit;
         _landingFormParser = landingFormParser ?? new LandingFormParser();
     }
 
@@ -30,15 +33,14 @@ public class LandingSubmitHandler
         var landing = _landingFormParser.Parse(form);
         if (_logPersonallyIdentifiableData) _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; DOB={landing.day}-{landing.month}-{landing.year}");
 
-        if (!landing.NhsIsValid(landing.nhs))
+        if (!landing.NhsIsValid(landing.nhs, _validateNhsCheckDigit))
         {
             LogInvalidNhsFormat(landing);
             return SendInvalidNhsNumberResponse();
         }
 
-        // Call the API client with the provided NHS number
         try{
-            return await CreateRedirectToQustionare(landing).ConfigureAwait(false);
+            return await CreateRedirectToQustionare(landing).ConfigureAwait(false); // core logic
         }
         catch(ApiServerException ex)
         {

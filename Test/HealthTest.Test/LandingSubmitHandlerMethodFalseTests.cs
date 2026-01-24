@@ -48,8 +48,11 @@ namespace HealthTest.Test
             var apiMock = new Mock<IApiClient>();
             apiMock.Setup(a => a.GetPatientFromNhsNumberAsync(It.IsAny<string>())).ReturnsAsync(patientMock.Object);
 
-            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(new AppSettings()));
+            var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false,
+                PatientNotFoundMessage = "Your details could not be found"
+            }; // Setting for generic message
 
+            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(config), null, config, null);
             var result = await handler.Handle(ctx);
 
             var redirect = Assert.IsType<RedirectHttpResult>(result);
@@ -78,7 +81,11 @@ namespace HealthTest.Test
             var apiMock = new Mock<IApiClient>();
             apiMock.Setup(a => a.GetPatientFromNhsNumberAsync(It.IsAny<string>())).ReturnsAsync(patientMock.Object);
 
-            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(new AppSettings()));
+            var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false,
+                PatientNotFoundMessage = "Your details could not be found"
+            }; // Setting for generic message
+
+            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(config), null, config, null);
 
             var result = await handler.Handle(ctx);
 
@@ -108,8 +115,11 @@ namespace HealthTest.Test
             var apiMock = new Mock<IApiClient>();
             apiMock.Setup(a => a.GetPatientFromNhsNumberAsync(It.IsAny<string>())).ReturnsAsync(patientMock.Object);
 
-            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(new AppSettings()));
+            var config = new AppSettings { InformUserWhenNhsNumberFormatIncorrect = false,
+                PatientNotFoundMessage = "Your details could not be found"
+            }; // Setting for generic message
 
+            var handler = new LandingSubmitHandler(apiMock.Object, new AgeBandCalculator(config), null, config, null);
             var result = await handler.Handle(ctx);
 
             var redirect = Assert.IsType<RedirectHttpResult>(result);

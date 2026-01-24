@@ -17,7 +17,16 @@ namespace HealthTest.Test
         public void NhsIsValidFormat_Works(string input, bool expected)
         {
             var lf = new LandingFormModel();
-            var actual = lf.NhsIsValid(input);
+            var actual = lf.NhsIsValid(input, validateCheckDigit: true);
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData("1112223330", true)] // Invalid check digit
+        public void NhsIsValidFormat_ValidateCheckDigitFalse(string input, bool expected)
+        {
+            var lf = new LandingFormModel();
+            var actual = lf.NhsIsValid(input, validateCheckDigit: false);
             Assert.Equal(expected, actual);
         }
     }

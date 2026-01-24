@@ -1,9 +1,9 @@
 namespace HealthTest;
 
 // Seperate parser class enforces single responsibility and facilitates unit testing
-public class LandingFormParser
+public class LandingFormParser : ILandingFormParser
 {
-    public LandingFormModel Parse(IFormCollection form)
+    public virtual LandingFormModel Parse(IFormCollection form)
     {
         return new LandingFormModel
         {
