@@ -1,5 +1,7 @@
 namespace HealthTest;
 
+using System.Net;
+
 public class QuestionnairePageGenerator
 {
     private readonly string _template;
@@ -13,8 +15,9 @@ public class QuestionnairePageGenerator
         for (int i = 0; i < questions?.Count; i++)
         {
             var questionTemplate = System.IO.File.ReadAllText(questionTemplatePath);
+            var safeQuestion = WebUtility.HtmlEncode(questions[i] ?? string.Empty);
             questionHtml += questionTemplate
-                .Replace("{{QuestionText}}", questions[i])
+                .Replace("{{QuestionText}}", safeQuestion)
                 .Replace("{{QuestionNumber}}", (i).ToString());
         }
 
