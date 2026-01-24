@@ -52,6 +52,11 @@ public class LandingSubmitHandler
             _logger?.LogError($"API server error: {ex.Message}");
             return Answer("An error occurred while processing your request. Please try again later.");
         }
+        catch(Exception ex)
+        {
+            _logger?.LogError(ex, $"Unexpected error: {ex.Message}");
+            return Answer("An unexpected error occurred while processing your request. Please try again later.");
+        }
     }
 
     private async Task<IResult> CreateRedirectToQustionare(LandingFormModel landing)
