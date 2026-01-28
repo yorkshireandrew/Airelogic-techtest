@@ -31,6 +31,10 @@ builder.Services.AddSingleton<AnswerPageGenerator>(provider =>
 	new AnswerPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"))
 );
 
+builder.Services.AddSingleton<AppPageGenerator>(provider =>
+	new AppPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"))
+);
+
 // Register configuration validator
 builder.Services.AddSingleton<ConfigValidator>();
 
@@ -65,7 +69,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 // Serve the static HTML landing page
-app.MapGet("/", (LandingPageGenerator generator, HttpContext ctx) =>
+// Serve SPA app at root
+app.MapGet("/", (AppPageGenerator generator, HttpContext ctx) =>
 {
 	return generator.Generate();
 });
@@ -84,6 +89,13 @@ app.MapGet("/Answer", (AnswerPageGenerator generator, HttpContext ctx) =>
 {
 	var message = ctx.Request.Query["message"].ToString() ?? string.Empty;
 	return generator.Generate(message);
+});
+
+// Serve questions as JSON for SPA/frontend
+app.MapGet("/api/questions", (AppSettings settings, HttpContext ctx) =>
+{
+	var ageBand = ctx.Request.Query["ab"].ToString() ?? string.Empty;
+	return Results.Json(new { questions = settings.Questions, ageBand = ageBand });
 });
 
 app.MapPost("/landing-submit", async (LandingSubmitHandler handler, HttpContext ctx) =>
