@@ -98,6 +98,20 @@ app.MapGet("/api/questions", (AppSettings settings, HttpContext ctx) =>
 	return Results.Json(new { questions = settings.Questions, ageBand = ageBand });
 });
 
+// Serve browser-ready frontend JSX files
+app.MapGet("/frontend/browser/{file}", (string file) =>
+{
+	// Sanitize the requested filename - only allow .jsx files
+	if (string.IsNullOrEmpty(file) || !file.EndsWith(".jsx", StringComparison.OrdinalIgnoreCase))
+		return Results.NotFound();
+
+	var path = Path.Combine(builder.Environment.ContentRootPath, "Frontend", "Browser", file);
+	if (!System.IO.File.Exists(path)) return Results.NotFound();
+
+	var content = System.IO.File.ReadAllText(path);
+	return Results.Text(content, "text/babel");
+});
+
 app.MapPost("/landing-submit", async (LandingSubmitHandler handler, HttpContext ctx) =>
 {
 	return await handler.Handle(ctx);
