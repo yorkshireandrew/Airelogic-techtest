@@ -36,6 +36,7 @@ namespace HealthTest.Test;
               Answers = new List<bool> { true , true}
           };
 
+          // Act
           var score = scorer.Score(model);
           Assert.Equal(21, score);
       }
@@ -51,6 +52,7 @@ namespace HealthTest.Test;
               Answers = new List<bool> { true , true}
           };
 
+          // Act
           var score = scorer.Score(model);
           Assert.Equal(2, score);
       }
@@ -66,6 +68,7 @@ namespace HealthTest.Test;
               Answers = new List<bool> { false , false}
           };
 
+          // Act
           var score = scorer.Score(model);
           Assert.Equal(0, score);
       }
@@ -81,6 +84,7 @@ namespace HealthTest.Test;
               Answers = new List<bool> { true }
           };
 
+          // Act
           var score = scorer.Score(model);
           Assert.Equal(0, score);
       }
@@ -96,6 +100,7 @@ namespace HealthTest.Test;
               Answers = new List<bool> { false , false}
           };
 
+          // Act
           var score = scorer.Score(model);
           Assert.Equal(21, score);
       }
