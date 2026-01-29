@@ -20,18 +20,6 @@ builder.Services.AddSingleton<QuestionnaireScorer>();
 builder.Services.AddSingleton<QuestionnaireSubmitHandler>();
 
 builder.Services.AddSingleton(provider =>
-	new LandingPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), "Landing.html"	)
-);
-
-builder.Services.AddSingleton<QuestionnairePageGenerator>(provider =>
-	new QuestionnairePageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"), appSettings)
-);
-
-builder.Services.AddSingleton<AnswerPageGenerator>(provider =>
-	new AnswerPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"))
-);
-
-builder.Services.AddSingleton<AppPageGenerator>(provider =>
 	new AppPageGenerator(Path.Combine(builder.Environment.ContentRootPath, "Templates"))
 );
 
@@ -73,22 +61,6 @@ if (!app.Environment.IsDevelopment())
 app.MapGet("/", (AppPageGenerator generator, HttpContext ctx) =>
 {
 	return generator.Generate();
-});
-
-// Serve the Questionnaire page
-app.MapGet("/Questionnaire", async (QuestionnairePageGenerator generator, HttpContext ctx) =>
-{
-	var ageBand = ctx.Request.Query["ab"].ToString() ?? string.Empty;
-	var html = generator.Generate(ageBand);
-	ctx.Response.ContentType = "text/html";
-	await ctx.Response.WriteAsync(html);
-});
-
-// Serve Answer page (GET redirects)
-app.MapGet("/Answer", (AnswerPageGenerator generator, HttpContext ctx) =>
-{
-	var message = ctx.Request.Query["message"].ToString() ?? string.Empty;
-	return generator.Generate(message);
 });
 
 // Serve questions as JSON for SPA/frontend
