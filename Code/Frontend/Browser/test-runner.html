@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Browser Test Runner</title>
+  <style>body{font-family:monospace;padding:1rem} .pass{color:green} .fail{color:red}</style>
+</head>
+<body>
+  <h1>Browser Test Runner</h1>
+  <button id="run">Run Tests</button>
+  <pre id="output"></pre>
+
+  <!-- Load the util (exposes window.ValidateDob), then tests -->
+  <script src="utils/validateDob.js"></script>
+  <script src="validateDob.browser.test.js"></script>
+
+  <script>
+    const out = document.getElementById('output');
+    function log(line, cls) {
+      out.textContent += line + '\n';
+      if (cls) {
+        const span = document.createElement('span');
+        span.className = cls;
+        span.textContent = line + '\n';
+      }
+    }
+
+    function run() {
+      out.textContent = '';
+      const tests = window.__BROWSER_TESTS__ || [];
+      for (let t of tests) {
+        try {
+          t.fn();
+          out.textContent += `${t.name}:pass\n`;
+        } catch (e) {
+          out.textContent += `${t.name}:fail - ${e.message}\n`;
+        }
+      }
+    }
+
+    document.getElementById('run').addEventListener('click', run);
+    // auto-run
+    run();
+  </script>
+</body>
+</html>

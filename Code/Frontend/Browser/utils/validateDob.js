@@ -16,4 +16,14 @@ function validateDob(d, m, y) {
   return true;
 }
 
-module.exports = { validateDob, daysInMonth };
+// CommonJS export for Node/Jest (guarded for browsers)
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = { validateDob, daysInMonth };
+}
+
+// Browser global export for the lightweight test runner
+if (typeof window !== 'undefined') {
+  try {
+    window.ValidateDob = { validateDob, daysInMonth };
+  } catch (e) { }
+}
