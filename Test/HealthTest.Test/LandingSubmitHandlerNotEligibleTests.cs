@@ -45,8 +45,8 @@ namespace HealthTest.Test
 
             var result = await handler.Handle(ctx);
 
-            var redirect = Assert.IsType<RedirectHttpResult>(result);
-            Assert.Equal("/Answer?message=You%20are%20not%20eligible%20for%20this%20service", redirect.Url);
+            var json = Assert.IsType<LandingSubmitHandlerResponseJson>(result);
+            Assert.Equal("You are not eligible for this service", json.Message);
         }
 
         private DefaultHttpContext CreateContextWithForm(Dictionary<string, StringValues> values)

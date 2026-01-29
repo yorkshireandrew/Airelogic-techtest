@@ -73,8 +73,8 @@ namespace HealthTest.Test
 
             var result = await handler.Handle(ctx);
 
-            var redirect = Assert.IsType<RedirectHttpResult>(result);
-            Assert.Equal("/Answer?message=Your%20details%20could%20not%20be%20found", redirect.Url);
+            var json = Assert.IsType<LandingSubmitHandlerResponseJson>(result);
+            Assert.Equal("Your details could not be found", json.Message);
         }
 
         [Fact]
@@ -97,8 +97,8 @@ namespace HealthTest.Test
 
             var result = await handler.Handle(ctx);
 
-            var redirect = Assert.IsType<RedirectHttpResult>(result);
-            Assert.Equal("/Answer?message=Your%20details%20could%20not%20be%20found", redirect.Url);
+            var json = Assert.IsType<LandingSubmitHandlerResponseJson>(result);
+            Assert.Equal("Your details could not be found", json.Message);
         }
 
         [Fact]
@@ -119,8 +119,8 @@ namespace HealthTest.Test
 
             var result = await handler.Handle(ctx);
 
-            var redirect = Assert.IsType<RedirectHttpResult>(result);
-            Assert.Equal("/Answer?message=NHS%20number%20format%20is%20incorrect", redirect.Url);
+            var json = Assert.IsType<LandingSubmitHandlerResponseJson>(result);
+            Assert.Equal("NHS number format is incorrect", json.Message);
         }
 
                 
