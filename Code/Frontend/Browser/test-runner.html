@@ -10,9 +10,11 @@
   <button id="run">Run Tests</button>
   <pre id="output"></pre>
 
-  <!-- Load the util (exposes window.ValidateDob), then tests -->
+  <!-- Load utils and tests -->
   <script src="utils/validateDob.js"></script>
+  <script src="utils/landingValidators.js"></script>
   <script src="validateDob.browser.test.js"></script>
+  <script src="landingValidators.browser.test.js"></script>
 
   <script>
     const out = document.getElementById('output');

@@ -22,37 +22,23 @@ function LandingPage({ visible = true, onSubmitResponse = null }) {
     if (yearRef.current) yearRef.current.setCustomValidity('');
   };
 
-  const daysInMonth = (y, m) => new Date(y, m, 0).getDate();
-
+  // Use landingValidators if available to make validation testable
   const validateDob = () => {
     const dEl = dayRef.current;
     const mEl = monthRef.current;
     const yEl = yearRef.current;
     if (!dEl || !mEl || !yEl) return true;
-    const d = parseInt(dEl.value, 10);
-    const m = parseInt(mEl.value, 10);
-    const y = parseInt(yEl.value, 10);
 
-    if (Number.isNaN(d) || Number.isNaN(m) || Number.isNaN(y)) {
-      dEl.setCustomValidity('Please enter a valid numeric date of birth');
-      return false;
-    }
+    const d = dEl.value;
+    const m = mEl.value;
+    const y = yEl.value;
 
-    if (m < 1 || m > 12) {
-      mEl.setCustomValidity('Month must be between 1 and 12');
-      return false;
-    }
+    const result = window.LandingValidators.validateDobValues(d, m, y);
 
-    const dim = daysInMonth(y, m);
-    if (d < 1 || d > dim) {
-      dEl.setCustomValidity('Day is invalid for the selected month and year');
-      return false;
-    }
-
-    const dob = new Date(y, m - 1, d);
-    const today = new Date();
-    if (dob > today) {
-      dEl.setCustomValidity('Date of birth cannot be in the future');
+    if (!result.valid) {
+      if (result.field === 'day') dEl.setCustomValidity(result.message);
+      else if (result.field === 'month') mEl.setCustomValidity(result.message);
+      else if (result.field === 'year') yEl.setCustomValidity(result.message);
       return false;
     }
 
