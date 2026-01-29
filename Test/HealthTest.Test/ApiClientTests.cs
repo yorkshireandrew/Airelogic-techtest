@@ -57,7 +57,7 @@ namespace HealthTest.Test
         [Fact]
         public async Task GetPatientFromNhsNumberAsync_ThrowsApiServerException_On500()
         {
-            var body = "HTTP Code:InternalServerError HTTP Code:InternalServerError HTTP Code:InternalServerError server error details";
+            var body = "server error details";
             var response = new HttpResponseMessage(HttpStatusCode.InternalServerError) { Content = new StringContent(body) };
             var client = new HttpClient(new FakeHandler(response));
             var api = new ApiClient(client, new AppSettings { ApiEndpoint = "http://example" });

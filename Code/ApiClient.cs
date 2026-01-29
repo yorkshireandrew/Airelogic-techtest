@@ -41,7 +41,7 @@ public class ApiClient : IApiClient
             return result;
         }
 
-        throw new ApiServerException("HTTP Code:" + resp.StatusCode + " " + content);
+        throw new ApiServerException(resp.StatusCode, content);
     }
 }
 
