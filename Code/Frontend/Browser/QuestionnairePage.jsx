@@ -1,21 +1,22 @@
 const { useEffect, useState } = React;
 
-function QuestionnairePage({ visible = true }) {
+function QuestionnairePage({ visible = true, ageBand: ageBandProp = '' }) {
   const [questions, setQuestions] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState(new Set());
-  const [ageBand, setAgeBand] = useState('');
+  const [ageBand, setAgeBand] = useState(ageBandProp);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch('/api/questions');
+        const url = '/api/questions' + (ageBandProp ? `?ab=${encodeURIComponent(ageBandProp)}` : '');
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch');
         const body = await res.json();
         if (cancelled) return;
         const qs = Array.isArray(body.questions) ? body.questions : [];
         setQuestions(qs);
-        setAgeBand(body.ageBand || '');
+        setAgeBand(body.ageBand || ageBandProp || '');
         setSelectedAnswers(new Set());
       } catch (e) {
         if (!cancelled) { setQuestions([]); setSelectedAnswers(new Set()); }
@@ -23,7 +24,7 @@ function QuestionnairePage({ visible = true }) {
     }
     load();
     return () => { cancelled = true; };
-  }, []);
+  }, [ageBandProp]);
 
   if (!visible) return null;
 
