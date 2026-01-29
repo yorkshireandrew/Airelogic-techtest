@@ -17,7 +17,7 @@ public class QuestionnaireSubmitHandler
   }
     
   // No-op stub for questionnaire submission handling
-  public async Task<IResult> Handle(HttpContext ctx)
+  public async Task<QuestionnaireSubmitHandlerResponseJson> Handle(HttpContext ctx)
   {
     var form = await ctx.Request.ReadFormAsync();
     var answers = _parser.Parse(form);
@@ -30,10 +30,8 @@ public class QuestionnaireSubmitHandler
       return Answer(_welldoneMessage);
     }
   }
-
-  private IResult Answer(string message)
+  private QuestionnaireSubmitHandlerResponseJson Answer(string message)
     {
-        var encodedMessage = Uri.EscapeDataString(message);
-        return Results.Redirect($"/Answer?message={encodedMessage}");
+        return new QuestionnaireSubmitHandlerResponseJson { message = message };
     }
 }

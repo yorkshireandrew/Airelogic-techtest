@@ -1,9 +1,10 @@
-const { useEffect, useState } = React;
+const { useEffect, useState, useRef } = React;
 
-function QuestionnairePage({ visible = true, ageBand: ageBandProp = '' }) {
+function QuestionnairePage({ visible = true, ageBand: ageBandProp = '', onSubmitResponse = null }) {
   const [questions, setQuestions] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState(new Set());
   const [ageBand, setAgeBand] = useState(ageBandProp);
+  const formRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -28,6 +29,25 @@ function QuestionnairePage({ visible = true, ageBand: ageBandProp = '' }) {
 
   if (!visible) return null;
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = formRef.current || e.target;
+    if (!form) return;
+    // ensure submit enabled
+    if (selectedAnswers.size !== totalQuestions) return;
+
+    try {
+      const formData = new FormData(form);
+      const res = await fetch('/questionnaire-submit', { method: 'POST', body: formData });
+      if (res.ok) {
+        const json = await res.json();
+        if (typeof onSubmitResponse === 'function') onSubmitResponse(json);
+      }
+    } catch (err) {
+      console.error('Questionnaire submit error', err);
+    }
+  };
+
   const totalQuestions = questions.length;
 
   const onAnswerChange = (name) => {
@@ -46,7 +66,7 @@ function QuestionnairePage({ visible = true, ageBand: ageBandProp = '' }) {
   return (
     <div>
       <h1>Health Test Questionnaire</h1>
-      <form id="health-form" method="post" action="/questionnaire-submit">
+      <form id="health-form" ref={formRef} method="post" action="/questionnaire-submit" onSubmit={handleSubmit}>
         <table>
           <thead>
             <tr>

@@ -24,11 +24,22 @@ function Application() {
     }
   };
 
+  const handleQuestionnaireResponse = (resp) => {
+    if (!resp) return;
+    // Questionnaire submit returns { message: '...' } (camelCase)
+    if (resp.message && resp.message !== '') {
+      setAnswerMessage(resp.message);
+      setShowAnswer(true);
+      setShowQuestionnaire(false);
+      setShowLanding(false);
+    }
+  };
+
   return (
     <div>
       <LandingPage visible={showLanding} onSubmitResponse={handleLandingResponse} />
       <AnswerPage visible={showAnswer} message={answerMessage} />
-      <QuestionnairePage visible={showQuestionnaire} ageBand={questionnaireAgeBand} />
+      <QuestionnairePage visible={showQuestionnaire} ageBand={questionnaireAgeBand} onSubmitResponse={handleQuestionnaireResponse} />
     </div>
   );
 }
