@@ -1,6 +1,6 @@
 const { useEffect, useRef } = React;
 
-function LandingPage({ visible = true }) {
+function LandingPage({ visible = true, onSubmitResponse = null }) {
   const formRef = useRef(null);
   const nhsRef = useRef(null);
   const surnameRef = useRef(null);
@@ -60,7 +60,7 @@ function LandingPage({ visible = true }) {
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     if (nhsRef.current) nhsRef.current.value = nhsRef.current.value.trim();
     if (surnameRef.current) surnameRef.current.value = surnameRef.current.value.trim();
 
@@ -85,6 +85,24 @@ function LandingPage({ visible = true }) {
     if (!validateDob()) {
       e.preventDefault();
       if (dayRef.current && dayRef.current.reportValidity) dayRef.current.reportValidity();
+      return;
+    }
+
+    // Prevent normal form submission and POST via fetch. On successful (OK) response,
+    // parse JSON and pass it to the provided callback.
+    e.preventDefault();
+    try {
+      const form = formRef.current;
+      if (!form) return;
+      const formData = new FormData(form);
+      const res = await fetch('/landing-submit', { method: 'POST', body: formData });
+      if (res.ok) {
+        const json = await res.json();
+        if (typeof onSubmitResponse === 'function') onSubmitResponse(json);
+      }
+    } catch (err) {
+      // swallow - optionally could call callback with error info
+      console.error('Submit error', err);
     }
   };
 

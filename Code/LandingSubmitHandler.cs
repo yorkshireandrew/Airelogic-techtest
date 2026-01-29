@@ -26,7 +26,7 @@ public class LandingSubmitHandler
         _landingFormParser = landingFormParser ?? new LandingFormParser();
     }
 
-    public async Task<IResult> Handle(HttpContext ctx)
+    public async Task<LandingSubmitHandlerResponseJson> Handle(HttpContext ctx)
     {
         var form = await ctx.Request.ReadFormAsync();
 
@@ -59,24 +59,24 @@ public class LandingSubmitHandler
         }
     }
 
-    private async Task<IResult> CreateRedirectToQustionare(LandingFormModel landing)
+    private async Task<LandingSubmitHandlerResponseJson> CreateRedirectToQustionare(LandingFormModel landing)
     {
         var nineDigitNhs = landing.nhs.Length == 10 ? landing.nhs.Substring(0, 9) : landing.nhs;
         var patient = await _apiClient.GetPatientFromNhsNumberAsync(nineDigitNhs).ConfigureAwait(false);
-        if (patient == null) return Answer(_patientNotFoundMessage);
+        if (patient == null) return new LandingSubmitHandlerResponseJson { Message = _patientNotFoundMessage };
 
         if (patient.SurnameMatches(landing.surname) == false || patient.NhsNumberMatches(nineDigitNhs) == false || patient.DateOfBirthMatches(landing.day, landing.month, landing.year) == false)
         {
-            return Answer(_patientNotFoundMessage);
+            return new LandingSubmitHandlerResponseJson { Message = _patientNotFoundMessage };
         }
 
         var age = patient.CalculateAge(System.DateTime.Today);
         if (_logPersonallyIdentifiableData) _logger?.LogDebug($"Received: NHS={landing.nhs}; Surname={landing.surname}; Age={age}");
         var ageBand = _ageBandCalculator.CalculateAgeBand(age);
 
-        if (ageBand == -1) return Answer(_notEligibleMessage);
+        if (ageBand == -1) return new LandingSubmitHandlerResponseJson { Message = _notEligibleMessage };
 
-        return Results.Redirect($"/Questionnaire?ab={ageBand}");
+        return new LandingSubmitHandlerResponseJson { AgeBand = ageBand };
     }
 
     private void LogInvalidNhsFormat(LandingFormModel landing)
@@ -91,15 +91,14 @@ public class LandingSubmitHandler
         }
     }
 
-    private IResult SendInvalidNhsNumberResponse(){
+    private LandingSubmitHandlerResponseJson SendInvalidNhsNumberResponse(){
         if (_informUserWhenNhsNumberFormatIncorrect == true) return Answer("NHS number format is incorrect"); 
         return Answer(_patientNotFoundMessage);
     }
 
-    private IResult Answer(string message)
+    private LandingSubmitHandlerResponseJson Answer(string message)
     {
-        var encodedMessage = Uri.EscapeDataString(message);
-        return Results.Redirect($"/Answer?message={encodedMessage}");
+        return new LandingSubmitHandlerResponseJson { Message = message };
     }
 }
 
