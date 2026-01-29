@@ -17,7 +17,8 @@ function Application() {
       setShowLanding(false);
     } else if (resp.message === '') {
       // show questionnaire and pass ageBand from response (camelCase)
-      setQuestionnaireAgeBand(resp.ageBand || '');
+      const ab = (resp.ageBand !== undefined && resp.ageBand !== null) ? String(resp.ageBand) : '';
+      setQuestionnaireAgeBand(ab);
       setShowQuestionnaire(true);
       setShowLanding(false);
     }
