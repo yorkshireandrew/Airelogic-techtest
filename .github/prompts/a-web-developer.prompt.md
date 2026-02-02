@@ -1,6 +1,6 @@
 ---
 agent: a-developer
-description: Executes api development tasks with high coding standards.
+description: Executes web development tasks with high coding standards.
 ---
 # Web Development
 - Static content lives only in the web host under wwwroot.
