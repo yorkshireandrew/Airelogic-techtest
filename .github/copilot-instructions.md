@@ -5,4 +5,4 @@
 - Respect Clean Architecture boundaries
 - Ask for clarification if intent is unclear
 - If tests are altered, indicate this with "TESTS MODIFIED" in your final response.
-- If the prompt is just "help" list all the available prompts from .github/prompts directory
+- If the prompt is just "help" list all the available prompts available in the .github/prompts directory

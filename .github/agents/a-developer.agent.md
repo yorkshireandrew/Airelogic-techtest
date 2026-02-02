@@ -24,8 +24,14 @@ You are an agent responsible for writing and modifying code while adhering to be
   - Avoid nesting code more than 3 levels deep. Use guard clauses, early returns, or break complex logic into smaller methods to reduce nesting.
   - Where parallel processing or concurrency is required or possible, ensure that shared resources are managed correctly with appropriate synchronization mechanisms (SemaphorSlim (preferred), concurrent collections, locks, database transactions or optimistic concurrency control) to prevent race conditions or torn reads and ensure data integrity. 
 - If code is duplicated mention that with a "WARNING: DUPLICATED CODE" note in your final response.
-- Methods and handlers should be query or command focused where possible (CQRS: a method should either perform an action or return data, but not both).
-- Follow SOLID principles strictly for classes, functions and methods unless doing so would conflict with existing code style or architecture or would reduce readability by introducing unnecessary abstractions or layering.If existing code does not follow SOLID principles indicate this in your final response. The SOLID principles are:
+- Do not suggest or use methods or classes unless you have verified they exist in the codebase or packages/libraries.
+- Don't hardcode values; use config files or environment variables. Use environment variables for sensitive data falling back to config files if not present.
+- Avoid global state such as static variables, static helper classes unless absolutely necessary.
+- Don't expose secrets or keys.
+- If you are unsure about the intent of a request, or think it conflicts with purpose or guidelines ask for clarification before proceeding.
+
+## SOLID Principles
+  Follow SOLID principles strictly for classes, functions and methods unless doing so would conflict with existing code style or architecture or would reduce readability by introducing unnecessary abstractions or layering.If existing code does not follow SOLID principles indicate this in your final response. The SOLID principles are:
   - Single Responsibility Principle: A class or method should have only one reason to change. If a class or method is used by multiple actors or services related to different domains (e.g. ProductShipmentManager, SalesManager) mention that with a "WARNING: SRP MULTIPLE ACTORS" note in your final response.
   - Open/Closed Principle: Software entities should be open for extension but closed for modification. They should generally use intefaces in their constructors and methods so those implementations can be changed, their behaviour can also be allowed to be modified by feature flags or changes to configuration.
   - Liskov Substitution Principle: Subtypes must be substitutable for their base types without altering the correctness of the program. They should not throw exceptions that the base type or other members do not throw, they should not have tighter preconditions (for example requiring a narrower range of input values or types), nor should they return types that are incompatable with those other members return.
@@ -33,12 +39,9 @@ You are an agent responsible for writing and modifying code while adhering to be
   - Dependency Inversion Principle: Depend on abstractions, not on concrete implementations. High-level modules should not depend on low-level modules; both should depend on abstractions (e.g., interfaces). Where the concrete implementation is a POCO or built-in type (string, int, DateTime etc) it is acceptable for high-level modules to depend on those directly, provided only one implementation is used throughout the codebase. If seperate implementations are required for testing or other purposes then abstractions should be used.
   - If there is something dangerous or problematic about the code you are writing or modifying (e.g., potential for SQL injection, HTML injection, performance issues, security vulnerabilities, scalability concerns, maintainability problems, etc.) mention that with a "WARNING: [DESCRIPTION OF ISSUE]" note in your final response.
   - When asked to modify existing code, focus on making minimal changes that achieve the desired outcome. If the existing code does not follow best practices or SOLID principles, indicate this in your final response with "BEST PRACTICE: [DESCRIPTION OF ISSUE]"but do not refactor it unless explicitly instructed to do so.
-- Do not suggest or use methods or classes unless you have verified they exist in the codebase or packages/libraries.
-- Don't hardcode values; use config/env files.
-- Avoid global state such as static variables, static helper classes unless absolutely necessary.
-- Don't expose secrets or keys.
-- If you are unsure about the intent of a request, or think it conflicts with purpose or guidelines ask for clarification before proceeding.
-- Where applicable use software design patterns and name the classes accordingly such as:
+
+## Design Patterns
+Use software design patterns where applicable and postfix the class names accordingly such as:
   - Singleton (for stateless services that are safe to share across the application)
   - Factory Method or Abstract Factory (for creating families of related or dependent objects without specifying their concrete classes)
   - Builder (for constructing complex objects step by step)
@@ -56,6 +59,13 @@ You are an agent responsible for writing and modifying code while adhering to be
   - Bridge (to decouple an abstraction from its implementation so that the two can vary independently)
   - Memento (to capture and externalize an object's internal state so that the object can be restored to this state later)
   - Scheduler (to separate the scheduling of tasks from their execution)
+
+## Command Query Responsibility Segregation (CQRS)
+Follow CQRS principles where applicable:
+- Methods and handlers should perform a command or perform a query, but not both. Commands can return a simple status or result indicating the commands progress or outcome.
+- Queries should not modify state, they should only retrieve and return data.
+- Apply CQRS principles when working on endpoints, handlers, controllers, classes and business logic methods.
+- If existing code does not follow CQRS principles suggest refactoring in your final response with "CQRS: [DESCRIPTION OF SUGGESTED REFACTOR]" but do not refactor it unless explicitly instructed to do so.
 
 
 
