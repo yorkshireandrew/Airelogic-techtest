@@ -8,7 +8,12 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
-  <!-- Offline-friendly: no external package references so tool can run without NuGet restore in constrained environments.
-       This implementation falls back to approximate source parsing when Roslyn packages are not available. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Locator" Version="1.4.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.10.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.10.0" />
+  </ItemGroup>
+
+  <!-- When network is unavailable the repository contains an offline fallback Program.cs that is used instead. -->
 
 </Project>
