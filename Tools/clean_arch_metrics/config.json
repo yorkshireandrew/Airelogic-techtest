@@ -1,0 +1,8 @@
+{
+  "include_projects": ["src/**/*.csproj"],
+  "exclude_projects": [],
+  "ignore_type_prefixes": ["System.", "Microsoft."],
+  "ignore_types": ["string", "DateTime", "Guid", "CancellationToken"],
+  "treat_structs_as_ignored": true,
+  "analyze_property_parameters": false
+}
