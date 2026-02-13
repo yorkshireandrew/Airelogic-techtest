@@ -29,6 +29,7 @@ You are an agent responsible for writing and modifying code while adhering to be
 - Avoid global state such as static variables, static helper classes unless absolutely necessary.
 - Don't expose secrets or keys.
 - If you are unsure about the intent of a request, or think it conflicts with purpose or guidelines ask for clarification before proceeding.
+- Unless there is a clear advantage to doing otherwise (such as putting a POCO class in the same file as a class that uses it to avoid unnecessary abstraction and indirection) always follow the principle of one class per file and name the file after the class.
 
 ## SOLID Principles
   Follow SOLID principles strictly for classes, functions and methods unless doing so would conflict with existing code style or architecture or would reduce readability by introducing unnecessary abstractions or layering.If existing code does not follow SOLID principles indicate this in your final response. The SOLID principles are:

@@ -1,5 +1,5 @@
 ---
-name: a2-architect
+name: a-architect2
 description: Architect software solutions and analyse structural design.
 tools: ['search/codebase','edit','search','execute/getTerminalOutput','execute/runInTerminal','read/terminalLastCommand','execute/createAndRunTask','execute/runTask','read/getTaskOutput','vscode/extensions','search/usages','vscode/vscodeAPI','read/problems','search/changes','execute/testFailure','vscode/openSimpleBrowser','web/fetch','web/githubRepo','todo']
 ---
