@@ -75,6 +75,15 @@ Follow CQRS principles where applicable:
 - Apply CQRS principles when working on endpoints, handlers, controllers, classes and business logic methods.
 - If existing code does not follow CQRS principles suggest refactoring in your final response with "CQRS: [DESCRIPTION OF SUGGESTED REFACTOR]" but do not refactor it unless explicitly instructed to do so.
 
+## Structure checks (always perform)
+- If the generated code or code changes couple together areas of code that were previously unrelated: 
+  - report as: **"NEW COUPLING: [DESCRIPTION OF ISSUE]"**
+  - Suggest ways to decouple if possible by introducing software design patterns, CQRS, new abstractions, new classes or altering the domain. Provide the suggestion without refactoring existing code.
+- If the generated code or code changes introduce a dependency from a higher-level layer to a lower-level layer (e.g. domain → application, application → interface adapters, domain → interface adapters, domain/application → frameworks/drivers), report as: **"LAYERING VIOLATION: [DESCRIPTION OF ISSUE]"**
+- If the generated code or code changes make methods/functions more complex consider extracting parts into smaller methods/functions or classes.
+- For every implementation class altered by generated code or code changes consider if that class can be split into multiple classes with clearer responsibilities. Report as:**"SPLIT CLASS SUGGESTION: [DESCRIPTION OF ISSUE]"**
+- Validate any methods/functions you use exist in the codebase or in declared packages/libraries.
+
 
 
 
