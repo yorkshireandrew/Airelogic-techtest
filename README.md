@@ -62,4 +62,31 @@ For in-process hosting (best performance), you can ensure the csproj includes (o
 - We could add a mapping that serves static content like JS or CSS making it easier to improve the look.
 - Simple C# replace alters the templates before rendering. Using something like RazorLight might improve performance, but I though keep-it-simple.
 
+## React bit
+App.html:10 loads Babel Standalone from CDN.
+C:\dev\Airelogic-techtest\Code\Templates\App.html
+
+The JSX files are included as App.html:12, so Babel picks them up.
+Babel transpiles that JSX to plain JavaScript in the browser, then executes it.
+Your server does not compile JSX; it serves files as text and marks .jsx as Program.cs:162, with the route allowing .jsx under Program.cs:144.
+(transpiling happens in browser)
+
+## javascript testing
+jest is javascript test tooling
+
+yoy run it with this from repo root:
+npm install
+npm install --save-dev jest-environment-jsdom
+npm test
+
+which is pointing to jest via
+C:\dev\Airelogic-techtest\package.json
+
+It runs the test under __tests__ ok.
+
+two fail because they are not Jest test files, even though their names match Jest’s discovery pattern.
+
+C:\dev\Airelogic-techtest\Code\Frontend\Browser\landingValidators.browser.test.js
+is run by
+test-runner.html
 

@@ -40,3 +40,5 @@ applicationhost.config
 *.cache
 *.db
 *.sqlite
+
+node_modules/
