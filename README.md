@@ -73,6 +73,37 @@ Your server does not compile JSX; it serves files as text and marks .jsx as Prog
 
 other options are babel .. which you would do with something like:
 npx babel src --out-dir dist --presets @babel/preset-react
+The preset means: Use Babel’s React preset when compiling these files.
+
+You can do tsx files with:
+npm install --save-dev @babel/core @babel/cli @babel/preset-typescript @babel/preset-react
+
+then something like:
+npx babel src \
+  --out-dir dist \
+  --extensions ".ts,.tsx,.js,.jsx" \
+  --presets @babel/preset-typescript,@babel/preset-react
+
+  or babel config:
+
+  {
+  "presets": [
+    "@babel/preset-typescript",
+    ["@babel/preset-react", {
+      "runtime": "automatic"
+    }]
+  ]
+}
+
+then
+
+npx babel src --out-dir dist --extensions ".ts,.tsx,.js,.jsx"
+
+or this if you want type checking
+
+npx tsc --noEmit && npx babel src --out-dir dist --extensions ".ts,.tsx"
+
+
 
 Bun https://bun.com/  https://bun.com/docs/installation#windows
 bun build ./src/app.jsx --outdir ./dist
