@@ -71,6 +71,14 @@ Babel transpiles that JSX to plain JavaScript in the browser, then executes it.
 Your server does not compile JSX; it serves files as text and marks .jsx as Program.cs:162, with the route allowing .jsx under Program.cs:144.
 (transpiling happens in browser)
 
+other options are babel .. which you would do with something like:
+npx babel src --out-dir dist --presets @babel/preset-react
+
+Bun https://bun.com/  https://bun.com/docs/installation#windows
+bun build ./src/app.jsx --outdir ./dist
+
+esbuild (still needs npm) https://esbuild.github.io/getting-started/#your-first-bundle
+
 ## javascript testing
 jest is javascript test tooling
 
@@ -89,4 +97,6 @@ two fail because they are not Jest test files, even though their names match Jes
 C:\dev\Airelogic-techtest\Code\Frontend\Browser\landingValidators.browser.test.js
 is run by
 test-runner.html
+
+
 
